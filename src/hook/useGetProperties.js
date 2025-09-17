@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 const fetchProperties = async () => {
-  const { data } = await axios.get("http://localhost:3000/api/properties");
+  const { data } = await axios.get("https://property-managment-x0d8.onrender.com/api/properties");
   return data;
 };
 
