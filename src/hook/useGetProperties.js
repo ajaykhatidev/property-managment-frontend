@@ -6,7 +6,7 @@ const fetchProperties = async () => {
   return data;
 };
 
-export const useGetProperties = () => {
+export const useGetProperties = () => {   
   return useQuery({
     queryKey: ["properties"],
     queryFn: fetchProperties,
