@@ -102,7 +102,9 @@ export const AddProperty = () => {
                 Sector {i + 1}
               </option>
             ))}
+            <option value="other">Other</option>
           </select>
+          
         </label>
 
         {/* Title */}
@@ -125,6 +127,7 @@ export const AddProperty = () => {
             <option value="52M">52M</option>
             <option value="96M">96M</option>
             <option value="120M">120M</option>
+            <option value="120M">Plot</option>
             <option value="Others">Others</option>
           </select>
         </label>
@@ -248,16 +251,7 @@ export const AddProperty = () => {
           />
         </label>
 
-        <label>
-          Price:
-          <input
-            type="number"
-            name="price"
-            value={formData.price}
-            onChange={handleChange}
-            placeholder="Enter property price"
-          />
-        </label>
+       
 
         {/* Phone */}
         <label>
@@ -292,6 +286,18 @@ export const AddProperty = () => {
               📞 Contacts
             </button>
           </div>
+        </label>
+
+
+         <label>
+          Price:
+          <input
+            type="number"
+            name="price"
+            value={formData.price}
+            onChange={handleChange}
+            placeholder="Enter property price"
+          />
         </label>
 
         {/* Status */}

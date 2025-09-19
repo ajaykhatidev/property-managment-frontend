@@ -335,7 +335,7 @@ export const SellSold = () => {
                     
                     <div className="property-details">
                       <div className="detail-item">
-                        <strong>Address:</strong> {property.houseNo}, {property.block} {property.pocket}
+                        <strong>Address:</strong> {property.sector}/{property.block}/{property.pocket}/{property.houseNo}
                       </div>
                       <div className="detail-item">
                         <strong>BHK:</strong> {property.bhk}
