@@ -6,10 +6,13 @@ import './App.css';
 import { AddProperty } from "./components/AddProperty";
 import { PropertyList } from "./components/Propertylist";
 import { RentSold } from "./components/sold/RentSold";
-import { SellSold } from "./components/sold/SellSold";
+// import { SellSold } from "./components/sold/SellSold";
 import { Editproperty } from "./components/Editproperty";
 import { SellAvaliable } from "./components/Available/SellAvaliable";
 import { RentAvaliable } from "./components/Available/RentAvailable";
+import { SellSold } from "./components/sold/SellSold";
+// import { SellSold } from "./components/sold/SellSold";
+
 
 function Home() {
   return (
@@ -44,12 +47,12 @@ function App() {
           <Route path="/sold" element={<Sold />} />
           <Route path="/abilable" element={<Abilable />} />
           <Route path="/add-property" element={<AddProperty />} />
-          <Route path="/sellSold" element={<SellSold />} />
-          <Route path="/rentSold" element={<RentSold />} />
+          <Route path="/sellSold/:type" element={<SellSold />} />
+          <Route path="/rentSold/:type" element={<RentSold />} />
           {/* <Route path="/All" element={<PropertyList />} /> */}
           <Route path="/edit-property" element={<Editproperty />} />
-          <Route path="/SellAvaliable" element={<SellAvaliable />} />
-          <Route path="/rentAvaliable" element={<RentAvaliable />} />
+          <Route path="/SellAvaliable/:type" element={<SellAvaliable />} />
+          <Route path="/rentAvaliable/:type" element={<RentAvaliable />} />
         </Routes>
       </div>
     </Router>

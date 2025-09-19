@@ -7,11 +7,11 @@ export const Sold = () => {
       <h2>Sold Properties</h2>
 
       <div className="card-container">
-        <Link to="/sellSold" className="card">
+        <Link to="/sellSold/sellSold" className="card">
           Sell
         </Link>
 
-        <Link to="/rentSold" className="card">
+        <Link to="/rentSold/rentSold" className="card">
           Rent
         </Link>
       </div>

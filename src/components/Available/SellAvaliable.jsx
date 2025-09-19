@@ -1,239 +1,406 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQueryClient } from '@tanstack/react-query';
-import "../sold/RentSold.css"; // Reuse styles from SellSold
-import { useGetProperties } from "../../hook/useGetProperties";
-import { useDeleteProperty } from "../../hook/useAddProperty";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import { useUpdateProperty, useDeleteProperty } from "../../hook/useAddProperty";
+import "../sold/RentSold.css";
+
+const fetchProperties = async (filters) => {
+  console.log("🚀 API Call Starting with filters:", filters);
+  console.log("🔗 URL being called:", `https://property-managment-x0d8.onrender.com/api/properties`);
+  
+  try {
+    const response = await axios.get("https://property-managment-x0d8.onrender.com/api/properties", {
+      params: filters,
+    });
+    
+    console.log("✅ API Response received:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("❌ API Call Failed:", error);
+    console.error("Error details:", {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data
+    });
+    throw error;
+  }
+};
 
 export const SellAvaliable = () => {
-    const { data, isLoading, isError, error } = useGetProperties();
-    const deleteMutation = useDeleteProperty(); // Use delete hook
-    const navigate = useNavigate();
-    const queryClient = useQueryClient();
-    const [searchFilters, setSearchFilters] = useState({
-        searchText: "",
-        minPrice: "",
-        maxPrice: "",
-        bhk: "",
-        ownership: ""
+  console.log("🎯 SellAvailable Component Mounted/Re-rendered");
+  
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  
+  const [searchFilters, setSearchFilters] = useState({
+    searchText: "",
+    minPrice: "",
+    maxPrice: "",
+    bhk: "",
+    ownership: "",
+  });
+
+  // Track which property is being deleted/edited for better UX
+  const [deletingPropertyId, setDeletingPropertyId] = useState(null);
+  const [editingPropertyId, setEditingPropertyId] = useState(null);
+
+  // ✅ Debounced backend query params (only for non-text filters)
+  const backendQueryParams = useMemo(() => {
+    const params = { type: "SellAvaliable" }; // ✅ Send "sale" for available sell properties
+    
+    // Only send non-text filters to backend to reduce API calls
+    if (searchFilters.minPrice) {
+      params.minPrice = searchFilters.minPrice;
+    }
+    if (searchFilters.maxPrice) {
+      params.maxPrice = searchFilters.maxPrice;
+    }
+    if (searchFilters.bhk) {
+      params.bhk = searchFilters.bhk;
+    }
+    if (searchFilters.ownership) {
+      params.ownership = searchFilters.ownership;
+    }
+    
+    console.log("✅ Backend query params:", params);
+    return params;
+  }, [searchFilters.minPrice, searchFilters.maxPrice, searchFilters.bhk, searchFilters.ownership]);
+
+  // ✅ React Query with less frequent API calls
+  const { data, isLoading, isError, error, refetch } = useQuery({
+    queryKey: ["properties", backendQueryParams],
+    queryFn: () => {
+      console.log("🔄 React Query executing with params:", backendQueryParams);
+      return fetchProperties(backendQueryParams);
+    },
+    refetchOnWindowFocus: false, // ✅ Reduced auto-refetching
+    refetchInterval: 30000, // ✅ 30 seconds instead of 5
+    staleTime: 10000, // ✅ 10 seconds cache
+  });
+
+  const updateProperty = useUpdateProperty();
+  const deleteProperty = useDeleteProperty();
+
+  const properties = data?.properties || [];
+
+  // ✅ Client-side filtering with text search
+  const filteredProperties = useMemo(() => {
+    return properties.filter((property) => {
+      // Ensure it's Sale + Available (not sold)
+      const isSaleAvailable = property.rentOrSale === "Sale" && property.status !== "Sold";
+      if (!isSaleAvailable) return false;
+
+      // Text search (client-side for real-time feedback)
+      const searchText = searchFilters.searchText.toLowerCase();
+      const matchesText =
+        searchText === "" ||
+        property.title?.toLowerCase().includes(searchText) ||
+        property.houseNo?.toString().toLowerCase().includes(searchText) ||
+        property.block?.toLowerCase().includes(searchText) ||
+        property.pocket?.toLowerCase().includes(searchText) ||
+        property.reference?.toLowerCase().includes(searchText);
+
+      // Additional client-side filters (for immediate feedback)
+      const price = property.price || 0;
+      const minPrice = searchFilters.minPrice === "" ? 0 : Number(searchFilters.minPrice);
+      const maxPrice = searchFilters.maxPrice === "" ? Infinity : Number(searchFilters.maxPrice);
+      const matchesPrice = price >= minPrice && price <= maxPrice;
+
+      const matchesBHK = searchFilters.bhk === "" || property.bhk?.toString() === searchFilters.bhk;
+
+      const matchesOwnership =
+        searchFilters.ownership === "" ||
+        property.hpOrFreehold?.toLowerCase().includes(searchFilters.ownership.toLowerCase());
+
+      return matchesText && matchesPrice && matchesBHK && matchesOwnership;
     });
+  }, [properties, searchFilters]);
 
-    // Filter data based on rentOrSale and status first
-    const rentSoldProperties = data?.filter(
-        (property) => property.rentOrSale === "Sale" && property.status === "Available"
-    ) || [];
+  // ✅ Enhanced delete handler with better error handling and UX
+  const handleDelete = useCallback(async (propertyId) => {
+    if (!propertyId) {
+      alert("Error: Invalid property ID");
+      return;
+    }
 
-    // Apply search filters
-    const filteredProperties = useMemo(() => {
-        if (!data) return [];
-        return rentSoldProperties.filter((property) => {
-            // Text search across multiple fields
-            const searchText = searchFilters.searchText.toLowerCase();
-            const matchesText = searchText === "" || 
-                property.title?.toLowerCase().includes(searchText) ||
-                property.houseNo?.toString().toLowerCase().includes(searchText) ||
-                property.block?.toLowerCase().includes(searchText) ||
-                property.pocket?.toLowerCase().includes(searchText) ||
-                property.reference?.toLowerCase().includes(searchText);
-
-            // Price range filter
-            const price = property.price || 0;
-            const minPrice = searchFilters.minPrice === "" ? 0 : Number(searchFilters.minPrice);
-            const maxPrice = searchFilters.maxPrice === "" ? Infinity : Number(searchFilters.maxPrice);
-            const matchesPrice = price >= minPrice && price <= maxPrice;
-
-            // BHK filter
-            const matchesBHK = searchFilters.bhk === "" || 
-                property.bhk?.toString() === searchFilters.bhk;
-
-            // Ownership filter
-            const matchesOwnership = searchFilters.ownership === "" || 
-                property.hpOrFreehold?.toLowerCase().includes(searchFilters.ownership.toLowerCase());
-
-            return matchesText && matchesPrice && matchesBHK && matchesOwnership;
-        });
-    }, [data, searchFilters]);
-
-    // Handle early returns after all hooks
-    if (isLoading) return <p>Loading properties...</p>;
-    if (isError) return <p>Error: {error.message}</p>;
-
-    const handleFilterChange = (filterName, value) => {
-        setSearchFilters(prev => ({
-            ...prev,
-            [filterName]: value
-        }));
-    };
-
-    const clearFilters = () => {
-        setSearchFilters({
-            searchText: "",
-            minPrice: "",
-            maxPrice: "",
-            bhk: "",
-            ownership: ""
-        });
-    };
-
-    const handleEdit = (property) => {
-        // Navigate to add-property page with property data
-        navigate("/edit-property", { 
-            state: { property } 
-        });
-    };
-
-    const handleDelete = (propertyId) => {
-        if (window.confirm("Are you sure you want to delete this property?")) {
-            deleteMutation.mutate(propertyId, {
-                onSuccess: () => {
-                    // Invalidate and refetch properties
-                    queryClient.invalidateQueries({ queryKey: ['properties'] });
-                },
-            });
-        }
-    };
-
-    return (
-        <div className="rent-sold-list">
-            <h2>Sell Properties</h2>
-
-            {/* Search Filters */}
-            <div className="search-filters">
-                <div className="filter-row">
-                    <div className="search-input">
-                        <input
-                            type="text"
-                            placeholder="Search by title, house no, block, pocket, reference..."
-                            value={searchFilters.searchText}
-                            onChange={(e) => handleFilterChange("searchText", e.target.value)}
-                        />
-                    </div>
-                    <button onClick={clearFilters} className="clear-btn">
-                        Clear All
-                    </button>
-                </div>
-
-                <div className="filter-row">
-                    <div className="price-inputs">
-                        <input
-                            type="number"
-                            placeholder="Min Price"
-                            value={searchFilters.minPrice}
-                            onChange={(e) => handleFilterChange("minPrice", e.target.value)}
-                        />
-                        <span>to</span>
-                        <input
-                            type="number"
-                            placeholder="Max Price"
-                            value={searchFilters.maxPrice}
-                            onChange={(e) => handleFilterChange("maxPrice", e.target.value)}
-                        />
-                    </div>
-
-                    <select
-                        value={searchFilters.bhk}
-                        onChange={(e) => handleFilterChange("bhk", e.target.value)}
-                    >
-                        <option value="">Any BHK</option>
-                        <option value="1">1 BHK</option>
-                        <option value="2">2 BHK</option>
-                        <option value="3">3 BHK</option>
-                        <option value="4">4 BHK</option>
-                        <option value="5">5+ BHK</option>
-                    </select>
-
-                    <select
-                        value={searchFilters.ownership}
-                        onChange={(e) => handleFilterChange("ownership", e.target.value)}
-                    >
-                        <option value="">Any Ownership</option>
-                        <option value="freehold">Freehold</option>
-                        <option value="hp">HP</option>
-                    </select>
-                </div>
-
-                <div className="results-count">
-                    Showing {filteredProperties.length} of {rentSoldProperties.length} properties
-                </div>
-            </div>
-
-            {filteredProperties.length === 0 ? (
-                <p className="empty-state">
-                    {rentSoldProperties.length === 0 
-                        ? "No Rent Sold properties found." 
-                        : "No properties match your search criteria. Try adjusting your filters."
-                    }
-                </p>
-            ) : (
-                <ul className="properties-grid">
-                    {filteredProperties.map((property) => (
-                        <li key={property._id} className="property-card">
-                            <div className="status-badge">Available</div>
-                            
-                            <h3 className="property-title">{property.title}</h3>
-                            
-                            <p className="property-description">{property.description}</p>
-                            
-                            <div className="property-location">
-                                <div className="property-info">
-                                    <p><strong>House No:</strong> {property.houseNo}</p>
-                                    {property.block && <p><strong>Block:</strong> {property.block}</p>}
-                                    {property.pocket && <p><strong>Pocket:</strong> {property.pocket}</p>}
-                                </div>
-                            </div>
-
-                            <div className="property-specs">
-                                <p className="property-info">
-                                    <strong>Floor:</strong> {property.floor}
-                                </p>
-                                <p className="property-info">
-                                    <strong>BHK:</strong> {property.bhk}
-                                </p>
-                            </div>
-
-                            <div className="property-details">
-                                <p className="property-info">
-                                    <strong>Ownership:</strong> {property.hpOrFreehold}
-                                </p>
-                            </div>
-
-                            <div className="property-contact">
-                                <p className="property-info">
-                                    <strong>Reference:</strong> {property.reference}
-                                </p>
-                                <p className="property-info">
-                                    <strong>Mobile:</strong> {property.phoneNumber}
-                                </p>
-                            </div>
-
-                            <p className="property-price">
-                                {new Intl.NumberFormat("en-IN", {
-                                    style: "currency",
-                                    currency: "INR",
-                                    maximumFractionDigits: 0,
-                                }).format(property.price)}
-                            </p>
-
-                            <div className="card-actions">
-                                <button 
-                                    onClick={() => handleEdit(property)}
-                                    className="edit-btn"
-                                    disabled={deleteMutation.isPending}
-                                >
-                                    ✏️ Edit
-                                </button>
-                                <button 
-                                    onClick={() => handleDelete(property._id)}
-                                    className="delete-btn"
-                                    disabled={deleteMutation.isPending}
-                                >
-                                    {deleteMutation.isPending ? "🔄 Deleting..." : "🗑️ Delete"}
-                                </button>
-                            </div>
-                        </li>
-                    ))}
-                </ul>
-            )}
-        </div>
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this property? This action cannot be undone."
     );
+    
+    if (!confirmed) return;
+
+    try {
+      setDeletingPropertyId(propertyId);
+      console.log("🗑️ Starting delete for property:", propertyId);
+      
+      await deleteProperty.mutateAsync(propertyId);
+      
+      // Invalidate queries to refresh the list
+      await queryClient.invalidateQueries({ queryKey: ["properties"] });
+      
+      console.log("✅ Property deleted successfully");
+      
+      // Optional: You could show a toast notification here
+      // toast.success("Property deleted successfully!");
+      
+    } catch (error) {
+      console.error("❌ Delete failed:", error);
+      
+      // More specific error messages
+      let errorMessage = "Failed to delete property. Please try again.";
+      if (error.response?.status === 404) {
+        errorMessage = "Property not found. It may have already been deleted.";
+      } else if (error.response?.status === 403) {
+        errorMessage = "You don't have permission to delete this property.";
+      } else if (error.response?.status >= 500) {
+        errorMessage = "Server error. Please try again later.";
+      }
+      
+      alert(errorMessage);
+    } finally {
+      setDeletingPropertyId(null);
+    }
+  }, [deleteProperty, queryClient]);
+
+  // ✅ Enhanced edit handler with error handling
+  const handleEdit = useCallback(async (property) => {
+    if (!property || !property._id) {
+      console.error("Invalid property data for editing");
+      alert("Error: Invalid property data");
+      return;
+    }
+
+    try {
+      setEditingPropertyId(property._id);
+      console.log("✏️ Navigating to edit property:", property._id);
+      
+      // Optional: You could add a small delay to show the loading state
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      navigate("/edit-property", { state: { property } });
+    } catch (error) {
+      console.error("Error navigating to edit page:", error);
+      alert("Error opening edit page. Please try again.");
+    } finally {
+      setEditingPropertyId(null);
+    }
+  }, [navigate]);
+
+  // ✅ Optimized handlers with useCallback
+  const clearAllFilters = useCallback(() => {
+    setSearchFilters({
+      searchText: "",
+      minPrice: "",
+      maxPrice: "",
+      bhk: "",
+      ownership: "",
+    });
+  }, []);
+
+  // ✅ Optimized input handlers
+  const handleSearchTextChange = useCallback((e) => {
+    setSearchFilters(prev => ({ ...prev, searchText: e.target.value }));
+  }, []);
+
+  const handleMinPriceChange = useCallback((e) => {
+    setSearchFilters(prev => ({ ...prev, minPrice: e.target.value }));
+  }, []);
+
+  const handleMaxPriceChange = useCallback((e) => {
+    setSearchFilters(prev => ({ ...prev, maxPrice: e.target.value }));
+  }, []);
+
+  const handleBHKChange = useCallback((e) => {
+    setSearchFilters(prev => ({ ...prev, bhk: e.target.value }));
+  }, []);
+
+  const handleOwnershipChange = useCallback((e) => {
+    setSearchFilters(prev => ({ ...prev, ownership: e.target.value }));
+  }, []);
+
+  // ✅ Loading and error states with better UI
+  if (isLoading) return (
+    <div className="rent-sold-list">
+      <div className="loading-spinner">
+        <div className="spinner-icon">⏳</div>
+        <p>Loading properties...</p>
+      </div>
+    </div>
+  );
+  
+  if (isError) return (
+    <div className="rent-sold-list">
+      <div className="error-message">
+        <div className="error-icon">❌</div>
+        <p>Error loading properties: {error?.message || "Something went wrong"}</p>
+        <button onClick={() => refetch()} className="retry-btn">
+          🔄 Retry
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="rent-sold-list">
+      <div className="header-section">
+        <h2>
+          Available Properties <span className="sold-badge">Sale</span>
+        </h2>
+        <div className="results-count">
+          Found {filteredProperties.length} properties
+        </div>
+      </div>
+
+      {/* Enhanced Filters */}
+      <div className="search-filters">
+        <div className="filter-row">
+          <input
+            type="text"
+            placeholder="Search by title, house no, block, pocket, reference..."
+            value={searchFilters.searchText}
+            onChange={handleSearchTextChange}
+            className="search-input"
+          />
+          <button onClick={clearAllFilters} className="clear-btn">
+            Clear All
+          </button>
+        </div>
+        
+        <div className="filter-row">
+          <input
+            type="number"
+            placeholder="Min Price (₹)"
+            value={searchFilters.minPrice}
+            onChange={handleMinPriceChange}
+            className="price-input"
+          />
+          <input
+            type="number"
+            placeholder="Max Price (₹)"
+            value={searchFilters.maxPrice}
+            onChange={handleMaxPriceChange}
+            className="price-input"
+          />
+          
+          <select
+            value={searchFilters.bhk}
+            onChange={handleBHKChange}
+            className="filter-select"
+          >
+            <option value="">All BHK</option>
+            <option value="1">1 BHK</option>
+            <option value="2">2 BHK</option>
+            <option value="3">3 BHK</option>
+            <option value="4">4 BHK</option>
+            <option value="5">5+ BHK</option>
+          </select>
+          
+          <select
+            value={searchFilters.ownership}
+            onChange={handleOwnershipChange}
+            className="filter-select"
+          >
+            <option value="">All Ownership</option>
+            <option value="Leasehold">Leasehold</option>
+            <option value="Freehold">Freehold</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Properties Grid */}
+      <div className="properties-container">
+        {filteredProperties.length > 0 ? (
+          <ul className="properties-grid">
+            {filteredProperties.map((property) => {
+              const isDeleting = deletingPropertyId === property._id;
+              const isEditing = editingPropertyId === property._id;
+              const isProcessing = isDeleting || isEditing;
+
+              return (
+                <li key={property._id} className="property-card">
+                  <div className="card-header">
+                    <span className="status-badge">{property.status || "Available"}</span>
+                    <span className="type-badge">{property.rentOrSale}</span>
+                    {isProcessing && (
+                      <span className="processing-indicator">
+                        {isDeleting ? "🗑️" : "✏️"} Processing...
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div className="card-content">
+                    <h3 className="property-title">{property.title}</h3>
+                    <p className="property-description">{property.description}</p>
+                    
+                    <div className="property-details">
+                      <div className="detail-item">
+                        <strong>Address:</strong> {property.houseNo}, {property.block} {property.pocket}
+                      </div>
+                      <div className="detail-item">
+                        <strong>BHK:</strong> {property.bhk}
+                      </div>
+                      <div className="detail-item">
+                        <strong>Ownership:</strong> {property.hpOrFreehold}
+                      </div>
+                      <div className="detail-item">
+                        <strong>Floor:</strong> {property.floor}
+                      </div>
+                      <div className="detail-item price-highlight">
+                        <strong>Price:</strong> ₹ {property.price?.toLocaleString("en-IN")}
+                      </div>
+                      <div className="detail-item">
+                        <strong>Location:</strong> {property.location}
+                      </div>
+                      <div className="detail-item">
+                        <strong>Reference:</strong> {property.reference}
+                      </div>
+                      <div className="detail-item">
+                        <strong>Phone:</strong> {property.phoneNumber}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="card-actions">
+                    <button 
+                      onClick={() => handleEdit(property)}
+                      className={`edit-btn ${isEditing ? 'loading' : ''}`}
+                      disabled={isProcessing || updateProperty.isLoading}
+                      title="Edit this property"
+                    >
+                      {isEditing ? (
+                        <>⏳ Loading...</>
+                      ) : updateProperty.isLoading ? (
+                        <>⏳ Updating...</>
+                      ) : (
+                        <>✏️ Edit</>
+                      )}
+                    </button>
+                    <button 
+                      onClick={() => handleDelete(property._id)}
+                      className={`delete-btn ${isDeleting ? 'loading' : ''}`}
+                      disabled={isProcessing || deleteProperty.isLoading}
+                      title="Delete this property permanently"
+                    >
+                      {isDeleting ? (
+                        <>⏳ Deleting...</>
+                      ) : (
+                        <>🗑️ Delete</>
+                      )}
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <div className="no-properties">
+            <div className="no-properties-icon">🏠</div>
+            <h3>No available sale properties found</h3>
+            <p>Try adjusting your search filters or check back later.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };

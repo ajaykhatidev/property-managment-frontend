@@ -1,13 +1,11 @@
-// Updated Editproperty component
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useQueryClient } from '@tanstack/react-query';
-// import { useAddProperty } from './hooks/useAddProperty'; // Import your existing hook
 import { useUpdateProperty } from "../hook/useAddProperty";
-// import { useAddProperty, useUpdateProperty } from "./hooks/useAddProperty"; // Import the new hook
 
 export const Editproperty = () => {
   const [formData, setFormData] = useState({
+    sector: "",
     title: "",
     description: "",
     houseNo: "",
@@ -27,19 +25,16 @@ export const Editproperty = () => {
   const { id } = useParams();
   const location = useLocation();
   const queryClient = useQueryClient();
-  
-  // Use your custom hooks
-//   const addMutation = useAddProperty();
   const updateMutation = useUpdateProperty();
   
-  // Check if we're in edit mode
-  const isEditMode = Boolean(id) || Boolean(location.state?.property);
+  // Get property data from navigation state
   const propertyToEdit = location.state?.property;
 
-  // Fill form data when editing
+  // Fill form data when component loads
   useEffect(() => {
-    if (isEditMode && propertyToEdit) {
+    if (propertyToEdit) {
       setFormData({
+        sector: propertyToEdit.sector || "",
         title: propertyToEdit.title || "",
         description: propertyToEdit.description || "",
         houseNo: propertyToEdit.houseNo || "",
@@ -55,7 +50,7 @@ export const Editproperty = () => {
         status: propertyToEdit.status || "Available",
       });
     }
-  }, [isEditMode, propertyToEdit]);
+  }, [propertyToEdit]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -65,135 +60,215 @@ export const Editproperty = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    if (isEditMode) {
-      // Update existing property
-      updateMutation.mutate({
-        id: propertyToEdit._id || id,
-        propertyData: formData
-      }, {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ['properties'] });
-          navigate(-1);
-        },
-      });
-    } else {
-      // Add new property
-      addMutation.mutate(formData, {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ['properties'] });
-          // Reset form after successful addition
-          setFormData({
-            title: "",
-            description: "",
-            houseNo: "",
-            block: "",
-            pocket: "",
-            floor: "",
-            bhk: "",
-            rentOrSale: "",
-            hpOrFreehold: "",
-            reference: "",
-            price: "",
-            phoneNumber: "",
-            status: "Available",
-          });
-          navigate(-1);
-        },
-      });
+    if (!propertyToEdit?._id) {
+      alert("❌ Property ID not found. Please try again.");
+      return;
+    }
+
+    updateMutation.mutate({
+      id: propertyToEdit._id,
+      propertyData: formData
+    }, {
+      onSuccess: () => {
+        alert("✅ Property updated successfully!");
+        queryClient.invalidateQueries({ queryKey: ['properties'] });
+        navigate(-1); // Go back to previous page
+      },
+      onError: (error) => {
+        alert(`❌ Failed to update property: ${error?.message || "Unknown error"}`);
+      }
+    });
+  };
+
+  const handleSelectFromContacts = async () => {
+    try {
+      if ("contacts" in navigator && "ContactsManager" in window) {
+        const props = ["name", "tel"];
+        const opts = { multiple: false };
+        const contacts = await navigator.contacts.select(props, opts);
+
+        if (contacts.length > 0) {
+          const contact = contacts[0];
+          if (contact.tel && contact.tel.length > 0) {
+            const phoneNumber = contact.tel[0].replace(/\D/g, "");
+            if (phoneNumber.length <= 10) {
+              setFormData((prev) => ({ ...prev, phoneNumber }));
+            }
+          }
+        }
+      } else {
+        alert("Contact selection is not supported on this device/browser");
+      }
+    } catch (error) {
+      console.error("Error accessing contacts:", error);
+      alert("Unable to access contacts. Please enter number manually.");
     }
   };
 
-  // Get loading state from appropriate mutation
-  const isLoading = isEditMode ? updateMutation.isPending : addMutation.isPending;
-  const error = isEditMode ? updateMutation.error : addMutation.error;
+  // If no property data, show error
+  if (!propertyToEdit) {
+    return (
+      <div className="add-property-container">
+        <div className="error-message" style={{ color: 'red', textAlign: 'center', padding: '2rem' }}>
+          ❌ No property data found. Please select a property to edit.
+          <br />
+          <button onClick={() => navigate(-1)} style={{ marginTop: '1rem' }}>
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="add-property-container">
-      <h2>{isEditMode ? "Edit Property" : "Add New Property"}</h2>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+        <button 
+          onClick={() => navigate(-1)} 
+          style={{ 
+            background: '#6c757d', 
+            color: 'white', 
+            border: 'none', 
+            padding: '8px 16px', 
+            borderRadius: '4px',
+            cursor: 'pointer'
+          }}
+        >
+          ← Back
+        </button>
+        <h2>Edit Property</h2>
+      </div>
       
-      {error && (
-        <div className="error-message" style={{ color: 'red', marginBottom: '1rem' }}>
-          {error.message}
+      {updateMutation.isError && (
+        <div className="error-message" style={{ color: 'red', marginBottom: '1rem', padding: '1rem', background: '#ffe6e6', borderRadius: '4px' }}>
+          ❌ {updateMutation.error?.message || "Failed to update property"}
         </div>
       )}
       
       <form onSubmit={handleSubmit} className="add-property-form">
+        {/* Sector */}
+        <label>
+          Sector:
+          <select
+            name="sector"
+            value={formData.sector}
+            onChange={handleChange}
+            disabled={updateMutation.isPending}
+          >
+            <option value="">Select Sector</option>
+            {Array.from({ length: 40 }, (_, i) => (
+              <option key={i + 1} value={i + 1}>
+                Sector {i + 1}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        {/* Title */}
         <label>
           Title:
-          <input 
-            type="text" 
-            name="title" 
-            value={formData.title} 
-            onChange={handleChange} 
-            required 
-            disabled={isLoading}
+          <input
+            type="text"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            placeholder="Enter property title"
+            disabled={updateMutation.isPending}
           />
         </label>
 
+        {/* Description */}
         <label>
           Description:
-          <textarea 
-            name="description" 
-            value={formData.description} 
-            onChange={handleChange} 
-            required
-            disabled={isLoading}
-          ></textarea>
+          <input
+            type="text"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            placeholder="Enter property description"
+            disabled={updateMutation.isPending}
+          />
         </label>
 
+        {/* House No */}
         <label>
           House No:
-          <input 
-            type="text" 
-            name="houseNo" 
-            value={formData.houseNo} 
-            onChange={handleChange} 
-            required 
-            disabled={isLoading}
+          <input
+            type="text"
+            name="houseNo"
+            value={formData.houseNo}
+            onChange={handleChange}
+            disabled={updateMutation.isPending}
           />
         </label>
 
+        {/* Block */}
         <label>
           Block:
-          <input 
-            type="text" 
+          <select 
             name="block" 
             value={formData.block} 
-            onChange={handleChange} 
-            disabled={isLoading}
-          />
+            onChange={handleChange}
+            disabled={updateMutation.isPending}
+          >
+            <option value="">Select Block</option>
+            {Array.from({ length: 10 }, (_, i) => (
+              <option
+                key={String.fromCharCode(65 + i)}
+                value={String.fromCharCode(65 + i)}
+              >
+                Block {String.fromCharCode(65 + i)}
+              </option>
+            ))}
+            <option value="Others">Others</option>
+          </select>
         </label>
 
+        {/* Pocket */}
         <label>
           Pocket:
-          <input 
-            type="text" 
+          <select 
             name="pocket" 
             value={formData.pocket} 
-            onChange={handleChange} 
-            disabled={isLoading}
-          />
+            onChange={handleChange}
+            disabled={updateMutation.isPending}
+          >
+            <option value="">Select Pocket</option>
+            {Array.from({ length: 50 }, (_, i) => (
+              <option key={i + 1} value={i + 1}>
+                Pocket {i + 1}
+              </option>
+            ))}
+            <option value="Others">Others</option>
+          </select>
         </label>
 
+        {/* Floor */}
         <label>
           Floor:
-          <input 
-            type="text" 
+          <select 
             name="floor" 
             value={formData.floor} 
-            onChange={handleChange} 
-            disabled={isLoading}
-          />
+            onChange={handleChange}
+            disabled={updateMutation.isPending}
+          >
+            <option value="">Select Floor</option>
+            {Array.from({ length: 6 }, (_, i) => (
+              <option key={i} value={i}>
+                Floor {i}
+              </option>
+            ))}
+          </select>
         </label>
 
+        {/* BHK */}
         <label>
           BHK:
-          <select 
-            name="bhk" 
-            value={formData.bhk} 
-            onChange={handleChange} 
-            required
-            disabled={isLoading}
+          <select
+            name="bhk"
+            value={formData.bhk}
+            onChange={handleChange}
+            disabled={updateMutation.isPending}
           >
             <option value="">Select</option>
             <option value="1">1 BHK</option>
@@ -204,14 +279,14 @@ export const Editproperty = () => {
           </select>
         </label>
 
+        {/* Rent/Sale */}
         <label>
           Rent / Sale:
-          <select 
-            name="rentOrSale" 
-            value={formData.rentOrSale} 
-            onChange={handleChange} 
-            required
-            disabled={isLoading}
+          <select
+            name="rentOrSale"
+            value={formData.rentOrSale}
+            onChange={handleChange}
+            disabled={updateMutation.isPending}
           >
             <option value="">Select</option>
             <option value="Rent">Rent</option>
@@ -219,14 +294,14 @@ export const Editproperty = () => {
           </select>
         </label>
 
+        {/* HP/Freehold */}
         <label>
           HP / Freehold:
-          <select 
-            name="hpOrFreehold" 
-            value={formData.hpOrFreehold} 
-            onChange={handleChange} 
-            required
-            disabled={isLoading}
+          <select
+            name="hpOrFreehold"
+            value={formData.hpOrFreehold}
+            onChange={handleChange}
+            disabled={updateMutation.isPending}
           >
             <option value="">Select</option>
             <option value="HP">HP</option>
@@ -234,17 +309,19 @@ export const Editproperty = () => {
           </select>
         </label>
 
+        {/* Reference */}
         <label>
           Reference:
-          <input 
-            type="text" 
-            name="reference" 
-            value={formData.reference} 
-            onChange={handleChange} 
-            disabled={isLoading}
+          <input
+            type="text"
+            name="reference"
+            value={formData.reference}
+            onChange={handleChange}
+            disabled={updateMutation.isPending}
           />
         </label>
 
+        {/* Price */}
         <label>
           Price:
           <input
@@ -253,48 +330,94 @@ export const Editproperty = () => {
             value={formData.price}
             onChange={handleChange}
             placeholder="Enter property price"
-            required
-            disabled={isLoading}
+            disabled={updateMutation.isPending}
           />
         </label>
 
+        {/* Phone */}
         <label>
           Phone Number:
-          <input
-            type="tel"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={(e) => {
-              const value = e.target.value.replace(/\D/g, "");
-              if (value.length <= 10) {
-                setFormData((prev) => ({ ...prev, phoneNumber: value }));
-              }
-            }}
-            placeholder="Enter 10-digit number"
-            required
-            disabled={isLoading}
-          />
+          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+            <input
+              type="tel"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={(e) => {
+                const value = e.target.value.replace(/\D/g, "");
+                if (value.length <= 10) {
+                  setFormData((prev) => ({ ...prev, phoneNumber: value }));
+                }
+              }}
+              placeholder="Enter 10-digit number"
+              style={{ flex: 1 }}
+              disabled={updateMutation.isPending}
+            />
+            <button
+              type="button"
+              onClick={handleSelectFromContacts}
+              disabled={updateMutation.isPending}
+              style={{
+                padding: "8px 12px",
+                background: updateMutation.isPending ? "#ccc" : "#007bff",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: updateMutation.isPending ? "not-allowed" : "pointer",
+                fontSize: "12px",
+              }}
+            >
+              📞 Contacts
+            </button>
+          </div>
         </label>
 
+        {/* Status */}
         <label>
           Status:
           <select 
             name="status" 
             value={formData.status} 
             onChange={handleChange}
-            disabled={isLoading}
+            disabled={updateMutation.isPending}
           >
             <option value="Available">Available</option>
             <option value="Sold">Sold</option>
           </select>
         </label>
 
-        <button type="submit" disabled={isLoading}>
-          {isLoading 
-            ? (isEditMode ? "Updating..." : "Submitting...") 
-            : (isEditMode ? "Update Property" : "Submit Property")
-          }
-        </button>
+        {/* Submit Button */}
+        <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+          <button 
+            type="button" 
+            onClick={() => navigate(-1)}
+            style={{
+              padding: "12px 24px",
+              background: "#6c757d",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer"
+            }}
+            disabled={updateMutation.isPending}
+          >
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            disabled={updateMutation.isPending}
+            style={{
+              padding: "12px 24px",
+              background: updateMutation.isPending ? "#ccc" : "#28a745",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: updateMutation.isPending ? "not-allowed" : "pointer",
+              flex: 1
+            }}
+          >
+            {updateMutation.isPending ? "Updating..." : "Update Property"}
+          </button>
+        </div>
       </form>
     </div>
   );

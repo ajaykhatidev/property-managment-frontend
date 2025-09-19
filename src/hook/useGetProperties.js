@@ -1,17 +1,25 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const fetchProperties = async () => {
-  const { data } = await axios.get("https://property-managment-x0d8.onrender.com/api/properties");
+const fetchProperties = async (filters) => {
+  const { data } = await axios.get(
+    "http://localhost:3000/api/properties",
+    {
+      params: filters,  // ✅ query params ke through backend filtering
+    }
+  );
   return data;
 };
 
-export const useGetProperties = () => {   
+export const useGetProperties = (filters = {}) => {
   return useQuery({
-    queryKey: ["properties"],
-    queryFn: fetchProperties,
+    queryKey: ["properties", filters], 
+    queryFn: () => fetchProperties(filters),
+    refetchOnWindowFocus: true,   // ✅ jab window/tab active hota hai
+    refetchInterval: 5000,        // ✅ har 5 sec me auto-refresh
   });
 };
+
 
 
 // 
