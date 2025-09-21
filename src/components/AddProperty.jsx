@@ -59,30 +59,70 @@ export const AddProperty = () => {
     });
   };
 
-  const handleSelectFromContacts = async () => {
-    try {
-      if ("contacts" in navigator && "ContactsManager" in window) {
-        const props = ["name", "tel"];
-        const opts = { multiple: false };
-        const contacts = await navigator.contacts.select(props, opts);
+const handleSelectFromContacts = async () => {
+  console.log("Contact picker clicked"); // Debug log
+  
+  try {
+    if ("contacts" in navigator && "ContactsManager" in window) {
+      const props = ["name", "tel"];
+      const opts = { multiple: false };
+      const contacts = await navigator.contacts.select(props, opts);
 
-        if (contacts.length > 0) {
-          const contact = contacts[0];
-          if (contact.tel && contact.tel.length > 0) {
-            const phoneNumber = contact.tel[0].replace(/\D/g, "");
-            if (phoneNumber.length <= 10) {
-              setFormData((prev) => ({ ...prev, phoneNumber }));
-            }
+      console.log("Selected contacts:", contacts); // Debug log
+
+      if (contacts.length > 0) {
+        const contact = contacts[0];
+        console.log("Contact details:", contact); // Debug log
+        
+        if (contact.tel && contact.tel.length > 0) {
+          let phoneNumber = contact.tel[0].replace(/\D/g, "");
+          console.log("Original cleaned number:", phoneNumber); // Debug log
+          
+          // Handle different phone number formats
+          if (phoneNumber.length === 11 && phoneNumber.startsWith('1')) {
+            // Remove US country code (+1)
+            phoneNumber = phoneNumber.substring(1);
+          } else if (phoneNumber.length === 12 && phoneNumber.startsWith('91')) {
+            // Remove India country code (+91)
+            phoneNumber = phoneNumber.substring(2);
+          } else if (phoneNumber.length > 10) {
+            // Take last 10 digits for any other long format
+            phoneNumber = phoneNumber.slice(-10);
           }
+          
+          console.log("Processed phone number:", phoneNumber); // Debug log
+          console.log("Phone number length:", phoneNumber.length); // Debug log
+          
+          // Update form data (removed the length restriction)
+          setFormData((prev) => {
+            const newData = { ...prev, phoneNumber };
+            console.log("Updated formData:", newData); // Debug log
+            return newData;
+          });
+          
+          alert(`Contact selected: ${phoneNumber}`); // Success feedback
+        } else {
+          alert("Selected contact has no phone number");
         }
       } else {
-        alert("Contact selection is not supported on this device/browser");
+        console.log("No contacts selected");
       }
-    } catch (error) {
-      console.error("Error accessing contacts:", error);
+    } else {
+      alert("Contact selection is not supported on this device/browser");
+    }
+  } catch (error) {
+    console.error("Error accessing contacts:", error);
+    
+    // More specific error handling
+    if (error.name === 'AbortError') {
+      console.log("User cancelled contact selection");
+    } else if (error.name === 'NotSupportedError') {
+      alert("Contact picker not supported on this browser");
+    } else {
       alert("Unable to access contacts. Please enter number manually.");
     }
-  };
+  }
+};
 
   return (
     <div className="add-property-container">
