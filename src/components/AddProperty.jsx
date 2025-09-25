@@ -236,7 +236,10 @@ const handleSelectFromContacts = async () => {
                 Floor {i}
               </option>
             ))}
+            <option>Kothi</option>
+            <option>Plot</option>
           </select>
+
         </label>
 
         <label>
@@ -252,6 +255,8 @@ const handleSelectFromContacts = async () => {
             <option value="3">3 BHK</option>
             <option value="4">4 BHK</option>
             <option value="5">5 BHK</option>
+            <option value="5">1 RK</option>
+            <option value="5">None</option>
           </select>
         </label>
 
