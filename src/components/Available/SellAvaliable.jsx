@@ -39,6 +39,7 @@ export const SellAvaliable = () => {
     maxPrice: "",
     bhk: "",
     ownership: "",
+    sector: "", // Added sector filter
   });
 
   // Track which property is being deleted/edited for better UX
@@ -62,10 +63,13 @@ export const SellAvaliable = () => {
     if (searchFilters.ownership) {
       params.ownership = searchFilters.ownership;
     }
+    if (searchFilters.sector) {
+      params.sector = searchFilters.sector; // Added sector to backend params
+    }
     
     console.log("✅ Backend query params:", params);
     return params;
-  }, [searchFilters.minPrice, searchFilters.maxPrice, searchFilters.bhk, searchFilters.ownership]);
+  }, [searchFilters.minPrice, searchFilters.maxPrice, searchFilters.bhk, searchFilters.ownership, searchFilters.sector]);
 
   // ✅ React Query with less frequent API calls
   const { data, isLoading, isError, error, refetch } = useQuery({
@@ -84,6 +88,12 @@ export const SellAvaliable = () => {
 
   const properties = data?.properties || [];
 
+  // Extract unique sectors for the dropdown
+  const availableSectors = useMemo(() => {
+    const sectors = [...new Set(properties.map(property => property.sector).filter(Boolean))];
+    return sectors.sort();
+  }, [properties]);
+
   // ✅ Client-side filtering with text search
   const filteredProperties = useMemo(() => {
     return properties.filter((property) => {
@@ -99,7 +109,8 @@ export const SellAvaliable = () => {
         property.houseNo?.toString().toLowerCase().includes(searchText) ||
         property.block?.toLowerCase().includes(searchText) ||
         property.pocket?.toLowerCase().includes(searchText) ||
-        property.reference?.toLowerCase().includes(searchText);
+        property.reference?.toLowerCase().includes(searchText) ||
+        property.sector?.toLowerCase().includes(searchText); // Added sector to text search
 
       // Additional client-side filters (for immediate feedback)
       const price = property.price || 0;
@@ -113,7 +124,10 @@ export const SellAvaliable = () => {
         searchFilters.ownership === "" ||
         property.hpOrFreehold?.toLowerCase().includes(searchFilters.ownership.toLowerCase());
 
-      return matchesText && matchesPrice && matchesBHK && matchesOwnership;
+      const matchesSector =
+        searchFilters.sector === "" || property.sector === searchFilters.sector;
+
+      return matchesText && matchesPrice && matchesBHK && matchesOwnership && matchesSector;
     });
   }, [properties, searchFilters]);
 
@@ -195,6 +209,7 @@ export const SellAvaliable = () => {
       maxPrice: "",
       bhk: "",
       ownership: "",
+      sector: "", // Added sector to clear filters
     });
   }, []);
 
@@ -217,6 +232,10 @@ export const SellAvaliable = () => {
 
   const handleOwnershipChange = useCallback((e) => {
     setSearchFilters(prev => ({ ...prev, ownership: e.target.value }));
+  }, []);
+
+  const handleSectorChange = useCallback((e) => {
+    setSearchFilters(prev => ({ ...prev, sector: e.target.value }));
   }, []);
 
   // ✅ Loading and error states with better UI
@@ -257,7 +276,7 @@ export const SellAvaliable = () => {
         <div className="filter-row">
           <input
             type="text"
-            placeholder="Search by title, house no, block, pocket, reference..."
+            placeholder="Search by title, house no, block, pocket, reference, sector..."
             value={searchFilters.searchText}
             onChange={handleSearchTextChange}
             className="search-input"
@@ -304,6 +323,20 @@ export const SellAvaliable = () => {
             <option value="">All Ownership</option>
             <option value="Leasehold">Leasehold</option>
             <option value="Freehold">Freehold</option>
+          </select>
+
+          {/* Added Sector Filter Dropdown */}
+          <select
+            value={searchFilters.sector}
+            onChange={handleSectorChange}
+            className="filter-select"
+          >
+            <option value="">All Sectors</option>
+            {availableSectors.map((sector) => (
+              <option key={sector} value={sector}>
+                {sector}
+              </option>
+            ))}
           </select>
         </div>
       </div>
