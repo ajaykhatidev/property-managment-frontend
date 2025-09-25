@@ -335,6 +335,7 @@ const handleSelectFromContacts = async () => {
             <option value="">Select</option>
             <option value="Rent">Rent</option>
             <option value="Sale">Sale</option>
+            <option value="Lease">Lease</option>
           </select>
         </label>
 
