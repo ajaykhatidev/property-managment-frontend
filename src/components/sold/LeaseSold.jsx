@@ -27,8 +27,8 @@ const fetchProperties = async (filters) => {
   }
 };
 
-export const RentSold = () => {
-  console.log("🎯 RentSold Component Mounted/Re-rendered");
+export const LeaseSold = () => {
+  console.log("🎯 LeaseSold Component Mounted/Re-rendered");
   
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -47,7 +47,7 @@ export const RentSold = () => {
 
   // ✅ Debounced backend query params (only for non-text filters)
   const backendQueryParams = useMemo(() => {
-    const params = { type: "rentSold" };
+    const params = { type: "leaseSold" }; // ✅ Send for sold lease properties
     
     // Only send non-text filters to backend to reduce API calls
     if (searchFilters.minPrice) {
@@ -87,9 +87,9 @@ export const RentSold = () => {
   // ✅ Client-side filtering with text search
   const filteredProperties = useMemo(() => {
     return properties.filter((property) => {
-      // Ensure it's Rent + Sold
-      const isRentSold = property.rentOrSale === "Rent" && property.status === "Sold";
-      if (!isRentSold) return false;
+      // Ensure it's Lease + Sold
+      const isLeaseSold = property.rentOrSale === "Lease" && property.status === "Sold";
+      if (!isLeaseSold) return false;
 
       // Text search (client-side for real-time feedback)
       const searchText = searchFilters.searchText.toLowerCase();
@@ -125,24 +125,24 @@ export const RentSold = () => {
     }
 
     const confirmed = window.confirm(
-      "Are you sure you want to delete this sold property? This action cannot be undone."
+      "Are you sure you want to delete this sold lease property? This action cannot be undone."
     );
     
     if (!confirmed) return;
 
     try {
       setDeletingPropertyId(propertyId);
-      console.log("🗑️ Starting delete for sold property:", propertyId);
+      console.log("🗑️ Starting delete for sold lease property:", propertyId);
       
       await deleteProperty.mutateAsync(propertyId);
       
       // Invalidate queries to refresh the list
       await queryClient.invalidateQueries({ queryKey: ["properties"] });
       
-      console.log("✅ Sold property deleted successfully");
+      console.log("✅ Sold lease property deleted successfully");
       
       // Optional: Show success notification
-      // toast.success("Sold property deleted successfully!");
+      // toast.success("Sold lease property deleted successfully!");
       
     } catch (error) {
       console.error("❌ Delete failed:", error);
@@ -163,8 +163,8 @@ export const RentSold = () => {
     }
   }, [deleteProperty, queryClient]);
 
-  // ✅ Enhanced edit handler - Option 1: Navigate to edit page
-  const handleEditNavigate = useCallback(async (property) => {
+  // ✅ Enhanced edit handler with error handling
+  const handleEdit = useCallback(async (property) => {
     if (!property || !property._id) {
       console.error("Invalid property data for editing");
       alert("Error: Invalid property data");
@@ -173,9 +173,9 @@ export const RentSold = () => {
 
     try {
       setEditingPropertyId(property._id);
-      console.log("✏️ Navigating to edit sold property:", property._id);
+      console.log("✏️ Navigating to edit sold lease property:", property._id);
       
-      // Add small delay for visual feedback
+      // Optional: You could add a small delay to show the loading state
       await new Promise(resolve => setTimeout(resolve, 200));
       
       navigate("/edit-property", { state: { property } });
@@ -187,55 +187,7 @@ export const RentSold = () => {
     }
   }, [navigate]);
 
-  // ✅ Enhanced edit handler - Option 2: Quick title edit (your original approach but improved)
-  const handleQuickEdit = useCallback(async (property) => {
-    if (!property || !property._id) {
-      alert("Error: Invalid property data");
-      return;
-    }
-
-    const newTitle = prompt("Enter new title:", property.title);
-    if (!newTitle || newTitle.trim() === property.title) {
-      return; // User cancelled or no change
-    }
-
-    try {
-      setEditingPropertyId(property._id);
-      console.log("✏️ Quick editing property title:", property._id);
-      
-      await updateProperty.mutateAsync({
-        id: property._id, 
-        propertyData: { ...property, title: newTitle.trim() }
-      });
-      
-      // Invalidate queries to refresh the list
-      await queryClient.invalidateQueries({ queryKey: ["properties"] });
-      
-      console.log("✅ Property title updated successfully");
-      
-    } catch (error) {
-      console.error("❌ Update failed:", error);
-      
-      let errorMessage = "Failed to update property. Please try again.";
-      if (error.response?.status === 404) {
-        errorMessage = "Property not found. It may have been deleted.";
-      } else if (error.response?.status === 403) {
-        errorMessage = "You don't have permission to edit this property.";
-      } else if (error.response?.status >= 500) {
-        errorMessage = "Server error. Please try again later.";
-      }
-      
-      alert(errorMessage);
-    } finally {
-      setEditingPropertyId(null);
-    }
-  }, [updateProperty, queryClient]);
-
-  // You can choose which edit handler to use:
-  const handleEdit = handleEditNavigate; // For full edit page
-  // const handleEdit = handleQuickEdit; // For quick title edit
-
-  // ✅ Optimized filter handlers
+  // ✅ Optimized handlers with useCallback
   const clearAllFilters = useCallback(() => {
     setSearchFilters({
       searchText: "",
@@ -246,6 +198,7 @@ export const RentSold = () => {
     });
   }, []);
 
+  // ✅ Optimized input handlers
   const handleSearchTextChange = useCallback((e) => {
     setSearchFilters(prev => ({ ...prev, searchText: e.target.value }));
   }, []);
@@ -271,7 +224,7 @@ export const RentSold = () => {
     <div className="rent-sold-list">
       <div className="loading-spinner">
         <div className="spinner-icon">⏳</div>
-        <p>Loading sold properties...</p>
+        <p>Loading sold lease properties...</p>
       </div>
     </div>
   );
@@ -292,7 +245,7 @@ export const RentSold = () => {
     <div className="rent-sold-list">
       <div className="header-section">
         <h2>
-          Sold Properties <span className="sold-badge">Rent</span>
+          Sold Properties <span className="sold-badge">Lease</span>
         </h2>
         <div className="results-count">
           Found {filteredProperties.length} properties
@@ -382,7 +335,7 @@ export const RentSold = () => {
                     
                     <div className="property-details">
                       <div className="detail-item">
-                       <strong>Address:</strong> {property.sector}/{property.block}/{property.pocket}/{property.houseNo}
+                        <strong>Address:</strong> {property.sector}/{property.block}/{property.pocket}/{property.houseNo}
                       </div>
                       <div className="detail-item">
                         <strong>BHK:</strong> {property.bhk}
@@ -394,7 +347,7 @@ export const RentSold = () => {
                         <strong>Floor:</strong> {property.floor}
                       </div>
                       <div className="detail-item price-highlight sold-price">
-                        <strong>Sold Price:</strong> ₹ {property.price?.toLocaleString("en-IN")}
+                        <strong>Sold Lease Price:</strong> ₹ {property.price?.toLocaleString("en-IN")}
                       </div>
                       <div className="detail-item">
                         <strong>Location:</strong> {property.location}
@@ -413,7 +366,7 @@ export const RentSold = () => {
                       onClick={() => handleEdit(property)}
                       className={`edit-btn ${isEditing ? 'loading' : ''}`}
                       disabled={isProcessing || updateProperty.isLoading}
-                      title="Edit this sold property"
+                      title="Edit this sold lease property"
                     >
                       {isEditing ? (
                         <>⏳ Editing...</>
@@ -427,7 +380,7 @@ export const RentSold = () => {
                       onClick={() => handleDelete(property._id)}
                       className={`delete-btn ${isDeleting ? 'loading' : ''}`}
                       disabled={isProcessing || deleteProperty.isLoading}
-                      title="Delete this sold property permanently"
+                      title="Delete this sold lease property permanently"
                     >
                       {isDeleting ? (
                         <>⏳ Deleting...</>
@@ -443,7 +396,7 @@ export const RentSold = () => {
         ) : (
           <div className="no-properties">
             <div className="no-properties-icon">🏠</div>
-            <h3>No sold rent properties found</h3>
+            <h3>No sold lease properties found</h3>
             <p>Try adjusting your search filters or check back later.</p>
           </div>
         )}

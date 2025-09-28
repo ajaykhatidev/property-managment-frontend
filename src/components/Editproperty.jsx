@@ -8,6 +8,7 @@ export const Editproperty = () => {
     sector: "",
     title: "",
     description: "",
+    propertyType: "",
     houseNo: "",
     block: "",
     pocket: "",
@@ -37,6 +38,7 @@ export const Editproperty = () => {
         sector: propertyToEdit.sector || "",
         title: propertyToEdit.title || "",
         description: propertyToEdit.description || "",
+        propertyType: propertyToEdit.propertyType || "",
         houseNo: propertyToEdit.houseNo || "",
         block: propertyToEdit.block || "",
         pocket: propertyToEdit.pocket || "",
@@ -114,14 +116,21 @@ const handleSelectFromContacts = async () => {
           console.log("Processed phone number:", phoneNumber); // Debug log
           console.log("Phone number length:", phoneNumber.length); // Debug log
           
-          // Update form data (removed the length restriction)
+          // Get contact name for reference
+          const contactName = contact.name && contact.name.length > 0 ? contact.name[0] : "";
+          
+          // Update form data with both phone number and reference name
           setFormData((prev) => {
-            const newData = { ...prev, phoneNumber };
+            const newData = { 
+              ...prev, 
+              phoneNumber,
+              reference: contactName || prev.reference // Only update if contact has a name
+            };
             console.log("Updated formData:", newData); // Debug log
             return newData;
           });
           
-          alert(`Contact selected: ${phoneNumber}`); // Success feedback
+          alert(`Contact selected: ${contactName ? contactName + ' - ' : ''}${phoneNumber}`); // Success feedback
         } else {
           alert("Selected contact has no phone number");
         }
@@ -230,17 +239,49 @@ const handleSelectFromContacts = async () => {
           />
         </label>
 
-        {/* House No */}
+        {/* Property Type */}
         <label>
-          House No:
-          <input
-            type="text"
-            name="houseNo"
-            value={formData.houseNo}
+          Property Type:
+          <select
+            name="propertyType"
+            value={formData.propertyType}
             onChange={handleChange}
             disabled={updateMutation.isPending}
-          />
+          >
+            <option value="">Select Type</option>
+            <option value="House">House</option>
+            <option value="Shop">Shop</option>
+          </select>
         </label>
+
+        {/* Conditional Input based on Property Type */}
+        {formData.propertyType === "House" && (
+          <label>
+            House No:
+            <input
+              type="text"
+              name="houseNo"
+              value={formData.houseNo}
+              onChange={handleChange}
+              placeholder="Enter house number"
+              disabled={updateMutation.isPending}
+            />
+          </label>
+        )}
+
+        {formData.propertyType === "Shop" && (
+          <label>
+            Shop Size:
+            <input
+              type="text"
+              name="houseNo"
+              value={formData.houseNo}
+              onChange={handleChange}
+              placeholder="Enter shop size (e.g., 10x15, 200 sq ft)"
+              disabled={updateMutation.isPending}
+            />
+          </label>
+        )}
 
         {/* Block */}
         <label>

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useUpdateProperty, useDeleteProperty } from "../../hook/useAddProperty";
-import "./RentSold.css";
+import "../sold/RentSold.css";
 
 const fetchProperties = async (filters) => {
   console.log("🚀 API Call Starting with filters:", filters);
@@ -27,8 +27,8 @@ const fetchProperties = async (filters) => {
   }
 };
 
-export const RentSold = () => {
-  console.log("🎯 RentSold Component Mounted/Re-rendered");
+export const LeaseAvailable = () => {
+  console.log("🎯 LeaseAvailable Component Mounted/Re-rendered");
   
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -39,6 +39,7 @@ export const RentSold = () => {
     maxPrice: "",
     bhk: "",
     ownership: "",
+    sector: "", // Added sector filter
   });
 
   // Track which property is being deleted/edited for better UX
@@ -47,7 +48,7 @@ export const RentSold = () => {
 
   // ✅ Debounced backend query params (only for non-text filters)
   const backendQueryParams = useMemo(() => {
-    const params = { type: "rentSold" };
+    const params = { type: "leaseAvailable" }; // ✅ Send "lease" for available lease properties
     
     // Only send non-text filters to backend to reduce API calls
     if (searchFilters.minPrice) {
@@ -62,10 +63,13 @@ export const RentSold = () => {
     if (searchFilters.ownership) {
       params.ownership = searchFilters.ownership;
     }
+    if (searchFilters.sector) {
+      params.sector = searchFilters.sector; // Added sector to backend params
+    }
     
     console.log("✅ Backend query params:", params);
     return params;
-  }, [searchFilters.minPrice, searchFilters.maxPrice, searchFilters.bhk, searchFilters.ownership]);
+  }, [searchFilters.minPrice, searchFilters.maxPrice, searchFilters.bhk, searchFilters.ownership, searchFilters.sector]);
 
   // ✅ React Query with less frequent API calls
   const { data, isLoading, isError, error, refetch } = useQuery({
@@ -84,12 +88,18 @@ export const RentSold = () => {
 
   const properties = data?.properties || [];
 
+  // Extract unique sectors for the dropdown
+  const availableSectors = useMemo(() => {
+    const sectors = [...new Set(properties.map(property => property.sector).filter(Boolean))];
+    return sectors.sort();
+  }, [properties]);
+
   // ✅ Client-side filtering with text search
   const filteredProperties = useMemo(() => {
     return properties.filter((property) => {
-      // Ensure it's Rent + Sold
-      const isRentSold = property.rentOrSale === "Rent" && property.status === "Sold";
-      if (!isRentSold) return false;
+      // Ensure it's Lease + Available (not sold)
+      const isLeaseAvailable = property.rentOrSale === "Lease" && property.status !== "Sold";
+      if (!isLeaseAvailable) return false;
 
       // Text search (client-side for real-time feedback)
       const searchText = searchFilters.searchText.toLowerCase();
@@ -99,7 +109,8 @@ export const RentSold = () => {
         property.houseNo?.toString().toLowerCase().includes(searchText) ||
         property.block?.toLowerCase().includes(searchText) ||
         property.pocket?.toLowerCase().includes(searchText) ||
-        property.reference?.toLowerCase().includes(searchText);
+        property.reference?.toLowerCase().includes(searchText) ||
+        property.sector?.toLowerCase().includes(searchText); // Added sector to text search
 
       // Additional client-side filters (for immediate feedback)
       const price = property.price || 0;
@@ -113,7 +124,10 @@ export const RentSold = () => {
         searchFilters.ownership === "" ||
         property.hpOrFreehold?.toLowerCase().includes(searchFilters.ownership.toLowerCase());
 
-      return matchesText && matchesPrice && matchesBHK && matchesOwnership;
+      const matchesSector =
+        searchFilters.sector === "" || property.sector === searchFilters.sector;
+
+      return matchesText && matchesPrice && matchesBHK && matchesOwnership && matchesSector;
     });
   }, [properties, searchFilters]);
 
@@ -125,24 +139,24 @@ export const RentSold = () => {
     }
 
     const confirmed = window.confirm(
-      "Are you sure you want to delete this sold property? This action cannot be undone."
+      "Are you sure you want to delete this lease property? This action cannot be undone."
     );
     
     if (!confirmed) return;
 
     try {
       setDeletingPropertyId(propertyId);
-      console.log("🗑️ Starting delete for sold property:", propertyId);
+      console.log("🗑️ Starting delete for lease property:", propertyId);
       
       await deleteProperty.mutateAsync(propertyId);
       
       // Invalidate queries to refresh the list
       await queryClient.invalidateQueries({ queryKey: ["properties"] });
       
-      console.log("✅ Sold property deleted successfully");
+      console.log("✅ Lease property deleted successfully");
       
-      // Optional: Show success notification
-      // toast.success("Sold property deleted successfully!");
+      // Optional: You could show a toast notification here
+      // toast.success("Lease property deleted successfully!");
       
     } catch (error) {
       console.error("❌ Delete failed:", error);
@@ -163,8 +177,8 @@ export const RentSold = () => {
     }
   }, [deleteProperty, queryClient]);
 
-  // ✅ Enhanced edit handler - Option 1: Navigate to edit page
-  const handleEditNavigate = useCallback(async (property) => {
+  // ✅ Enhanced edit handler with error handling
+  const handleEdit = useCallback(async (property) => {
     if (!property || !property._id) {
       console.error("Invalid property data for editing");
       alert("Error: Invalid property data");
@@ -173,9 +187,9 @@ export const RentSold = () => {
 
     try {
       setEditingPropertyId(property._id);
-      console.log("✏️ Navigating to edit sold property:", property._id);
+      console.log("✏️ Navigating to edit lease property:", property._id);
       
-      // Add small delay for visual feedback
+      // Optional: You could add a small delay to show the loading state
       await new Promise(resolve => setTimeout(resolve, 200));
       
       navigate("/edit-property", { state: { property } });
@@ -187,55 +201,7 @@ export const RentSold = () => {
     }
   }, [navigate]);
 
-  // ✅ Enhanced edit handler - Option 2: Quick title edit (your original approach but improved)
-  const handleQuickEdit = useCallback(async (property) => {
-    if (!property || !property._id) {
-      alert("Error: Invalid property data");
-      return;
-    }
-
-    const newTitle = prompt("Enter new title:", property.title);
-    if (!newTitle || newTitle.trim() === property.title) {
-      return; // User cancelled or no change
-    }
-
-    try {
-      setEditingPropertyId(property._id);
-      console.log("✏️ Quick editing property title:", property._id);
-      
-      await updateProperty.mutateAsync({
-        id: property._id, 
-        propertyData: { ...property, title: newTitle.trim() }
-      });
-      
-      // Invalidate queries to refresh the list
-      await queryClient.invalidateQueries({ queryKey: ["properties"] });
-      
-      console.log("✅ Property title updated successfully");
-      
-    } catch (error) {
-      console.error("❌ Update failed:", error);
-      
-      let errorMessage = "Failed to update property. Please try again.";
-      if (error.response?.status === 404) {
-        errorMessage = "Property not found. It may have been deleted.";
-      } else if (error.response?.status === 403) {
-        errorMessage = "You don't have permission to edit this property.";
-      } else if (error.response?.status >= 500) {
-        errorMessage = "Server error. Please try again later.";
-      }
-      
-      alert(errorMessage);
-    } finally {
-      setEditingPropertyId(null);
-    }
-  }, [updateProperty, queryClient]);
-
-  // You can choose which edit handler to use:
-  const handleEdit = handleEditNavigate; // For full edit page
-  // const handleEdit = handleQuickEdit; // For quick title edit
-
-  // ✅ Optimized filter handlers
+  // ✅ Optimized handlers with useCallback
   const clearAllFilters = useCallback(() => {
     setSearchFilters({
       searchText: "",
@@ -243,9 +209,11 @@ export const RentSold = () => {
       maxPrice: "",
       bhk: "",
       ownership: "",
+      sector: "", // Added sector to clear filters
     });
   }, []);
 
+  // ✅ Optimized input handlers
   const handleSearchTextChange = useCallback((e) => {
     setSearchFilters(prev => ({ ...prev, searchText: e.target.value }));
   }, []);
@@ -266,12 +234,16 @@ export const RentSold = () => {
     setSearchFilters(prev => ({ ...prev, ownership: e.target.value }));
   }, []);
 
+  const handleSectorChange = useCallback((e) => {
+    setSearchFilters(prev => ({ ...prev, sector: e.target.value }));
+  }, []);
+
   // ✅ Loading and error states with better UI
   if (isLoading) return (
     <div className="rent-sold-list">
       <div className="loading-spinner">
         <div className="spinner-icon">⏳</div>
-        <p>Loading sold properties...</p>
+        <p>Loading lease properties...</p>
       </div>
     </div>
   );
@@ -292,7 +264,7 @@ export const RentSold = () => {
     <div className="rent-sold-list">
       <div className="header-section">
         <h2>
-          Sold Properties <span className="sold-badge">Rent</span>
+          Available Properties <span className="sold-badge">Lease</span>
         </h2>
         <div className="results-count">
           Found {filteredProperties.length} properties
@@ -304,7 +276,7 @@ export const RentSold = () => {
         <div className="filter-row">
           <input
             type="text"
-            placeholder="Search by title, house no, block, pocket, reference..."
+            placeholder="Search by title, house no, block, pocket, reference, sector..."
             value={searchFilters.searchText}
             onChange={handleSearchTextChange}
             className="search-input"
@@ -352,6 +324,20 @@ export const RentSold = () => {
             <option value="Leasehold">Leasehold</option>
             <option value="Freehold">Freehold</option>
           </select>
+
+          {/* Added Sector Filter Dropdown */}
+          <select
+            value={searchFilters.sector}
+            onChange={handleSectorChange}
+            className="filter-select"
+          >
+            <option value="">All Sectors</option>
+            {availableSectors.map((sector) => (
+              <option key={sector} value={sector}>
+                {sector}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -365,13 +351,13 @@ export const RentSold = () => {
               const isProcessing = isDeleting || isEditing;
 
               return (
-                <li key={property._id} className="property-card sold-property">
+                <li key={property._id} className="property-card">
                   <div className="card-header">
-                    <span className="status-badge sold-status">{property.status}</span>
+                    <span className="status-badge">{property.status || "Available"}</span>
                     <span className="type-badge">{property.rentOrSale}</span>
                     {isProcessing && (
                       <span className="processing-indicator">
-                        {isDeleting ? "🗑️ Deleting..." : "✏️ Editing..."}
+                        {isDeleting ? "🗑️" : "✏️"} Processing...
                       </span>
                     )}
                   </div>
@@ -382,7 +368,7 @@ export const RentSold = () => {
                     
                     <div className="property-details">
                       <div className="detail-item">
-                       <strong>Address:</strong> {property.sector}/{property.block}/{property.pocket}/{property.houseNo}
+                        <strong>Address:</strong> {property.sector}/{property.block}/{property.pocket}/{property.houseNo}
                       </div>
                       <div className="detail-item">
                         <strong>BHK:</strong> {property.bhk}
@@ -393,8 +379,8 @@ export const RentSold = () => {
                       <div className="detail-item">
                         <strong>Floor:</strong> {property.floor}
                       </div>
-                      <div className="detail-item price-highlight sold-price">
-                        <strong>Sold Price:</strong> ₹ {property.price?.toLocaleString("en-IN")}
+                      <div className="detail-item price-highlight">
+                        <strong>Lease Price:</strong> ₹ {property.price?.toLocaleString("en-IN")}
                       </div>
                       <div className="detail-item">
                         <strong>Location:</strong> {property.location}
@@ -413,10 +399,10 @@ export const RentSold = () => {
                       onClick={() => handleEdit(property)}
                       className={`edit-btn ${isEditing ? 'loading' : ''}`}
                       disabled={isProcessing || updateProperty.isLoading}
-                      title="Edit this sold property"
+                      title="Edit this lease property"
                     >
                       {isEditing ? (
-                        <>⏳ Editing...</>
+                        <>⏳ Loading...</>
                       ) : updateProperty.isLoading ? (
                         <>⏳ Updating...</>
                       ) : (
@@ -427,7 +413,7 @@ export const RentSold = () => {
                       onClick={() => handleDelete(property._id)}
                       className={`delete-btn ${isDeleting ? 'loading' : ''}`}
                       disabled={isProcessing || deleteProperty.isLoading}
-                      title="Delete this sold property permanently"
+                      title="Delete this lease property permanently"
                     >
                       {isDeleting ? (
                         <>⏳ Deleting...</>
@@ -443,7 +429,7 @@ export const RentSold = () => {
         ) : (
           <div className="no-properties">
             <div className="no-properties-icon">🏠</div>
-            <h3>No sold rent properties found</h3>
+            <h3>No available lease properties found</h3>
             <p>Try adjusting your search filters or check back later.</p>
           </div>
         )}

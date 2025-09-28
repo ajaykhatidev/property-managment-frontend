@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
 // Base URL for consistency
-const BASE_URL = "https://property-managment-x0d8.onrender.com/api/properties";
+const BASE_URL = "http://localhost:3000/api/properties";
 
 export const useAddProperty = () => {
   return useMutation({

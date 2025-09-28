@@ -7,6 +7,7 @@ export const AddProperty = () => {
     sector: "",
     title: "",
     description: "",
+    propertyType: "",
     houseNo: "",
     block: "",
     pocket: "",
@@ -30,7 +31,58 @@ export const AddProperty = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    mutation.mutate(formData, {
+    
+    // Form validation
+    if (!formData.sector) {
+      alert("❌ Please select a sector");
+      return;
+    }
+    if (!formData.title) {
+      alert("❌ Please select a title");
+      return;
+    }
+    if (!formData.description.trim()) {
+      alert("❌ Please enter description");
+      return;
+    }
+    if (!formData.propertyType) {
+      alert("❌ Please select property type");
+      return;
+    }
+    if (!formData.houseNo.trim()) {
+      alert("❌ Please enter house number/shop size");
+      return;
+    }
+    if (!formData.bhk) {
+      alert("❌ Please select BHK");
+      return;
+    }
+    if (!formData.rentOrSale) {
+      alert("❌ Please select Rent/Sale/Lease");
+      return;
+    }
+    if (!formData.hpOrFreehold) {
+      alert("❌ Please select HP/Freehold/Lease");
+      return;
+    }
+    if (!formData.price || formData.price <= 0) {
+      alert("❌ Please enter a valid price");
+      return;
+    }
+    if (!formData.phoneNumber || formData.phoneNumber.length !== 10) {
+      alert("❌ Please enter a valid 10-digit phone number");
+      return;
+    }
+
+    // Convert price to number
+    const propertyData = {
+      ...formData,
+      price: Number(formData.price)
+    };
+
+    console.log("Submitting property data:", propertyData); // Debug log
+
+    mutation.mutate(propertyData, {
       onSuccess: () => {
         alert("✅ Property added successfully!");
 
@@ -38,6 +90,7 @@ export const AddProperty = () => {
           sector: "",
           title: "",
           description: "",
+          propertyType: "",
           houseNo: "",
           block: "",
           pocket: "",
@@ -53,8 +106,9 @@ export const AddProperty = () => {
 
         navigate(-1);
       },
-      onError: () => {
-        alert("❌ Failed to add property. Please try again.");
+      onError: (error) => {
+        console.error("Add property error:", error);
+        alert(`❌ Failed to add property: ${error.message}`);
       },
     });
   };
@@ -93,14 +147,21 @@ const handleSelectFromContacts = async () => {
           console.log("Processed phone number:", phoneNumber); // Debug log
           console.log("Phone number length:", phoneNumber.length); // Debug log
           
-          // Update form data (removed the length restriction)
+          // Get contact name for reference
+          const contactName = contact.name && contact.name.length > 0 ? contact.name[0] : "";
+          
+          // Update form data with both phone number and reference name
           setFormData((prev) => {
-            const newData = { ...prev, phoneNumber };
+            const newData = { 
+              ...prev, 
+              phoneNumber,
+              reference: contactName || prev.reference // Only update if contact has a name
+            };
             console.log("Updated formData:", newData); // Debug log
             return newData;
           });
           
-          alert(`Contact selected: ${phoneNumber}`); // Success feedback
+          alert(`Contact selected: ${contactName ? contactName + ' - ' : ''}${phoneNumber}`); // Success feedback
         } else {
           alert("Selected contact has no phone number");
         }
@@ -168,6 +229,7 @@ const handleSelectFromContacts = async () => {
             <option value="96M">96M</option>
             <option value="120M">120M</option>
             <option value="Plot">Plot</option>
+            <option value="DDA MARKET">DDA MARKET</option>
             <option value="Others">Others</option>
           </select>
         </label>
@@ -184,16 +246,46 @@ const handleSelectFromContacts = async () => {
           />
         </label>
 
-        {/* House No */}
+        {/* Property Type */}
         <label>
-          House No:
-          <input
-            type="text"
-            name="houseNo"
-            value={formData.houseNo}
+          Property Type:
+          <select
+            name="propertyType"
+            value={formData.propertyType}
             onChange={handleChange}
-          />
+          >
+            <option value="">Select Type</option>
+            <option value="House">House</option>
+            <option value="Shop">Shop</option>
+          </select>
         </label>
+
+        {/* Conditional Input based on Property Type */}
+        {formData.propertyType === "House" && (
+          <label>
+            House No:
+            <input
+              type="text"
+              name="houseNo"
+              value={formData.houseNo}
+              onChange={handleChange}
+              placeholder="Enter house number"
+            />
+          </label>
+        )}
+
+        {formData.propertyType === "Shop" && (
+          <label>
+            Shop Size:
+            <input
+              type="text"
+              name="houseNo"
+              value={formData.houseNo}
+              onChange={handleChange}
+              placeholder="Enter shop size (e.g., 10x15, 200 sq ft)"
+            />
+          </label>
+        )}
 
         {/* Block */}
         <label>
@@ -231,15 +323,15 @@ const handleSelectFromContacts = async () => {
           Floor:
           <select name="floor" value={formData.floor} onChange={handleChange}>
             <option value="">Select Floor</option>
-            {Array.from({ length: 6 }, (_, i) => (
-              <option key={i} value={i}>
-                Floor {i}
-              </option>
-            ))}
-            <option>Kothi</option>
-            <option>Plot</option>
+            <option value="0">Ground Floor</option>
+            <option value="1">1st Floor</option>
+            <option value="2">2nd Floor</option>
+            <option value="3">3rd Floor</option>
+            <option value="4">4th Floor</option>
+            <option value="5">5th Floor</option>
+            <option value="Kothi">Kothi</option>
+            <option value="Plot">Plot</option>
           </select>
-
         </label>
 
         <label>
@@ -284,6 +376,7 @@ const handleSelectFromContacts = async () => {
             <option value="">Select</option>
             <option value="HP">HP</option>
             <option value="Freehold">Freehold</option>
+            <option value="Lease">Lease</option>
           </select>
         </label>
 

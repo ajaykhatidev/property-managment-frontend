@@ -14,6 +14,10 @@ export const Sold = () => {
         <Link to="/rentSold/rentSold" className="card">
           Rent
         </Link>
+
+        <Link to="/leaseSold/leaseSold" className="card">
+          Lease
+        </Link>
       </div>
     </div>
   )

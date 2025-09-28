@@ -7,10 +7,10 @@ import "../sold/RentSold.css";
 
 const fetchProperties = async (filters) => {
   console.log("🚀 API Call Starting with filters:", filters);
-  console.log("🔗 URL being called:", `https://property-managment-x0d8.onrender.com/api/properties`);
+  console.log("🔗 URL being called:", `http://localhost:3000/api/properties`);
   
   try {
-    const response = await axios.get("https://property-managment-x0d8.onrender.com/api/properties", {
+    const response = await axios.get("http://localhost:3000/api/properties", {
       params: filters,
     });
     

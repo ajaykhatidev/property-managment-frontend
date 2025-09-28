@@ -7,7 +7,7 @@ import "../sold/RentSold.css";
 
 // Fetch function for RentAvailable
 const fetchRentAvailableProperties = async (filters) => {
-  const response = await axios.get("https://property-managment-x0d8.onrender.com/api/properties", {
+  const response = await axios.get("http://localhost:3000/api/properties", {
     params: { type: "rentAvailable", ...filters },
   });
   return response.data;

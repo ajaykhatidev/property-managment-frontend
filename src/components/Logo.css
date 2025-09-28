@@ -1,0 +1,164 @@
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Arial', sans-serif;
+}
+
+.logo-icon {
+  flex-shrink: 0;
+}
+
+.logo-hexagon {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  clip-path: polygon(30% 0%, 70% 0%, 100% 50%, 70% 100%, 30% 100%, 0% 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+}
+
+.logo-inner {
+  width: 35px;
+  height: 35px;
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  clip-path: polygon(30% 0%, 70% 0%, 100% 50%, 70% 100%, 30% 100%, 0% 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-text {
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.logo-text-container {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.logo-main-text {
+  font-size: 24px;
+  font-weight: bold;
+  color: #dc3545;
+  letter-spacing: 1px;
+}
+
+.logo-sub-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #007bff;
+  letter-spacing: 0.5px;
+}
+
+/* Size Variations */
+.logo-small .logo-hexagon {
+  width: 35px;
+  height: 35px;
+}
+
+.logo-small .logo-inner {
+  width: 25px;
+  height: 25px;
+}
+
+.logo-small .logo-text {
+  font-size: 10px;
+}
+
+.logo-small .logo-main-text {
+  font-size: 18px;
+}
+
+.logo-small .logo-sub-text {
+  font-size: 12px;
+}
+
+.logo-large .logo-hexagon {
+  width: 70px;
+  height: 70px;
+}
+
+.logo-large .logo-inner {
+  width: 50px;
+  height: 50px;
+}
+
+.logo-large .logo-text {
+  font-size: 20px;
+}
+
+.logo-large .logo-main-text {
+  font-size: 32px;
+}
+
+.logo-large .logo-sub-text {
+  font-size: 18px;
+}
+
+/* Hover Effects */
+.logo-container:hover .logo-hexagon {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+}
+
+.logo-container:hover .logo-main-text {
+  color: #c82333;
+  transition: color 0.3s ease;
+}
+
+.logo-container:hover .logo-sub-text {
+  color: #0056b3;
+  transition: color 0.3s ease;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .logo-container {
+    gap: 8px;
+  }
+  
+  .logo-hexagon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .logo-inner {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .logo-text {
+    font-size: 12px;
+  }
+  
+  .logo-main-text {
+    font-size: 20px;
+  }
+  
+  .logo-sub-text {
+    font-size: 12px;
+  }
+}
+
+/* Icon Only Version */
+.logo-icon-only .logo-hexagon {
+  width: 40px;
+  height: 40px;
+}
+
+.logo-icon-only .logo-inner {
+  width: 28px;
+  height: 28px;
+}
+
+.logo-icon-only .logo-text {
+  font-size: 12px;
+}

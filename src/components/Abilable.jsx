@@ -14,6 +14,10 @@ export const Abilable = () => {
         <Link to="/rentAvaliable/rentAvailable" className="card">
           Rent
         </Link>
+
+        <Link to="/leaseAvailable/leaseAvailable" className="card">
+          Lease
+        </Link>
       </div>
     </div>
   )
