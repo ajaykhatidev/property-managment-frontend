@@ -1,6 +1,6 @@
 {
-  "name": "Devbhoomi",
-  "short_name": "DBP",
+  "name": "Your App Name",
+  "short_name": "App",
   "icons": [
     {
       "src": "icons/icon-48x48.png",
