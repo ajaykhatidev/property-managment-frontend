@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAddProperty } from "../hook/useAddProperty";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
 
 export const AddProperty = () => {
   const [formData, setFormData] = useState({
@@ -34,43 +35,43 @@ export const AddProperty = () => {
     
     // Form validation
     if (!formData.sector) {
-      alert("❌ Please select a sector");
+      toast.error('Please select a sector');
       return;
     }
     if (!formData.title) {
-      alert("❌ Please select a title");
+      toast.error('Please select a title');
       return;
     }
     if (!formData.description.trim()) {
-      alert("❌ Please enter description");
+      toast.error('Please enter description');
       return;
     }
     if (!formData.propertyType) {
-      alert("❌ Please select property type");
+      toast.error('Please select property type');
       return;
     }
     if (!formData.houseNo.trim()) {
-      alert("❌ Please enter house number/shop size");
+      toast.error('Please enter house number/shop size');
       return;
     }
     if (!formData.bhk) {
-      alert("❌ Please select BHK");
+      toast.error('Please select BHK');
       return;
     }
     if (!formData.rentOrSale) {
-      alert("❌ Please select Rent/Sale/Lease");
+      toast.error('Please select Rent/Sale/Lease');
       return;
     }
     if (!formData.hpOrFreehold) {
-      alert("❌ Please select HP/Freehold/Lease");
+      toast.error('Please select HP/Freehold/Lease');
       return;
     }
     if (!formData.price || formData.price <= 0) {
-      alert("❌ Please enter a valid price");
+      toast.error('Please enter a valid price');
       return;
     }
     if (!formData.phoneNumber || formData.phoneNumber.length !== 10) {
-      alert("❌ Please enter a valid 10-digit phone number");
+      toast.error('Please enter a valid 10-digit phone number');
       return;
     }
 
@@ -83,7 +84,7 @@ export const AddProperty = () => {
 
     mutation.mutate(propertyData, {
       onSuccess: () => {
-        alert("✅ Property added successfully!");
+        toast.success('Property added successfully!');
 
         setFormData({
           sector: "",
@@ -106,7 +107,7 @@ export const AddProperty = () => {
         navigate(-1);
       },
       onError: (error) => {
-        alert(`❌ Failed to add property: ${error.message}`);
+        toast.error(`Failed to add property: ${error.message}`);
       },
     });
   };
@@ -149,22 +150,22 @@ const handleSelectFromContacts = async () => {
             return newData;
           });
           
-          alert(`Contact selected: ${contactName ? contactName + ' - ' : ''}${phoneNumber}`); // Success feedback
+          toast.success(`Contact selected: ${contactName ? contactName + ' - ' : ''}${phoneNumber}`);
         } else {
-          alert("Selected contact has no phone number");
+          toast.error("Selected contact has no phone number");
         }
       }
     } else {
-      alert("Contact selection is not supported on this device/browser");
+      toast.error("Contact selection is not supported on this device/browser");
     }
   } catch (error) {
     // More specific error handling
     if (error.name === 'AbortError') {
       // User cancelled contact selection
     } else if (error.name === 'NotSupportedError') {
-      alert("Contact picker not supported on this browser");
+      toast.error("Contact picker not supported on this browser");
     } else {
-      alert("Unable to access contacts. Please enter number manually.");
+      toast.error("Unable to access contacts. Please enter number manually.");
     }
   }
 };

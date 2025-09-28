@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../api/api-client.js';
+import { toast } from 'react-toastify';
 import './ViewClient.css';
 
 function ViewClient() {
@@ -81,14 +82,14 @@ function ViewClient() {
         const response = await api.deleteClient(clientId);
         
         if (response.data.success) {
-          alert('✅ Client deleted successfully!');
+          toast.success('Client deleted successfully!');
           // Refresh the client list
           fetchClients(currentPage, debouncedSearchTerm, requirementFilter);
         } else {
-          alert('❌ Failed to delete client');
+          toast.error('Failed to delete client');
         }
       } catch (err) {
-        alert('❌ Failed to delete client');
+        toast.error('Failed to delete client');
       }
     }
   };
@@ -121,7 +122,12 @@ function ViewClient() {
   if (error) {
     return (
       <div className="view-client-container">
-        <div className="error">{error}</div>
+        <div className="error">
+          {error}
+          <button onClick={() => fetchClients(currentPage, debouncedSearchTerm, requirementFilter)}>
+            Try Again
+          </button>
+        </div>
       </div>
     );
   }
@@ -162,11 +168,20 @@ function ViewClient() {
         </div>
       </div>
 
+      {/* Results Count */}
+      {clients.length > 0 && (
+        <div className="results-count">
+          Showing {clients.length} client{clients.length !== 1 ? 's' : ''}
+        </div>
+      )}
+
       {/* Client Cards */}
       <div className="client-cards">
         {clients.length === 0 ? (
           <div className="no-clients">
-            <p>No clients found</p>
+            <div className="no-clients-icon">👥</div>
+            <h3>No Clients Found</h3>
+            <p>Start building your client base by adding your first client</p>
             <Link to="/client/add" className="add-first-client-btn">
               Add Your First Client
             </Link>
@@ -193,7 +208,7 @@ function ViewClient() {
                   
                   <div className="info-item">
                     <span className="info-label">💰 Budget:</span>
-                    <span className="info-value">
+                    <span className="info-value budget-highlight">
                       {formatBudget(client.budgetMin, client.budgetMax)}
                     </span>
                   </div>

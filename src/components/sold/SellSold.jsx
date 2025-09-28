@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../api/api-client.js";
 import { useUpdateProperty, useDeleteProperty } from "../../hook/useAddProperty";
+import { toast } from 'react-toastify';
 import "../sold/RentSold.css";
 
 const fetchProperties = async (filters) => {
@@ -106,7 +107,7 @@ export const SellSold = () => {
   // ✅ Enhanced delete handler with better error handling and UX
   const handleDelete = useCallback(async (propertyId) => {
     if (!propertyId) {
-      alert("Error: Invalid property ID");
+      toast.error("Error: Invalid property ID");
       return;
     }
 
@@ -140,7 +141,7 @@ export const SellSold = () => {
         errorMessage = "Server error. Please try again later.";
       }
       
-      alert(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setDeletingPropertyId(null);
     }
@@ -149,7 +150,7 @@ export const SellSold = () => {
   // ✅ Enhanced edit handler with error handling
   const handleEdit = useCallback(async (property) => {
     if (!property || !property._id) {
-      alert("Error: Invalid property data");
+      toast.error("Error: Invalid property data");
       return;
     }
 
@@ -161,7 +162,7 @@ export const SellSold = () => {
       
       navigate("/edit-property", { state: { property } });
     } catch (error) {
-      alert("Error opening edit page. Please try again.");
+      toast.error("Error opening edit page. Please try again.");
     } finally {
       setEditingPropertyId(null);
     }

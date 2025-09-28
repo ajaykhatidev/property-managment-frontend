@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api/api-client.js';
+import { toast } from 'react-toastify';
 import './AddClient.css';
 
 function EditClient() {
@@ -57,15 +58,15 @@ function EditClient() {
     
     // Form validation
     if (!formData.clientName.trim()) {
-      alert('❌ Please enter client name');
+      toast.error('Please enter client name');
       return;
     }
     if (!formData.phoneNumber.trim()) {
-      alert('❌ Please enter phone number');
+      toast.error('Please enter phone number');
       return;
     }
     if (!formData.requirement) {
-      alert('❌ Please select requirement');
+      toast.error('Please select requirement');
       return;
     }
     
@@ -75,13 +76,13 @@ function EditClient() {
       const response = await api.updateClient(id, formData);
       
       if (response.data.success) {
-        alert('✅ Client updated successfully!');
+        toast.success('Client updated successfully!');
         navigate(-1);
       } else {
-        alert('❌ Failed to update client. Please try again.');
+        toast.error('Failed to update client. Please try again.');
       }
     } catch (error) {
-      alert('❌ Failed to update client. Please try again.');
+      toast.error('Failed to update client. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -135,19 +136,19 @@ function EditClient() {
             }));
           }
           
-          alert('✅ Contact information imported successfully!');
+          toast.success('Contact information imported successfully!');
         } else {
         }
       } else {
-        alert("Contact selection is not supported on this device/browser");
+        toast.error("Contact selection is not supported on this device/browser");
       }
     } catch (error) {
       
       if (error.name === 'AbortError') {
       } else if (error.name === 'NotSupportedError') {
-        alert("Contact picker not supported on this browser");
+        toast.error("Contact picker not supported on this browser");
       } else {
-        alert("Unable to access contacts. Please enter information manually.");
+        toast.error("Unable to access contacts. Please enter information manually.");
       }
     }
   };

@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api/api-client.js';
-import { useToast } from '../hooks/useToast';
+import { toast } from 'react-toastify';
 import './AddClient.css';
 
 function AddClient() {
   const navigate = useNavigate();
-  const { success, error } = useToast();
   const [formData, setFormData] = useState({
     clientName: '',
     phoneNumber: '',
@@ -30,15 +29,15 @@ function AddClient() {
     
     // Form validation
     if (!formData.clientName.trim()) {
-      error('Please enter client name');
+      toast.error('Please enter client name');
       return;
     }
     if (!formData.phoneNumber.trim()) {
-      error('Please enter phone number');
+      toast.error('Please enter phone number');
       return;
     }
     if (!formData.requirement) {
-      error('Please select requirement');
+      toast.error('Please select requirement');
       return;
     }
     
@@ -48,7 +47,7 @@ function AddClient() {
       const response = await api.addClient(formData);
       
       if (response.data.success) {
-        success('Client added successfully!');
+        toast.success('Client added successfully!');
         
         // Reset form
         setFormData({
@@ -63,10 +62,10 @@ function AddClient() {
         // Navigate back to client page
         navigate('/client');
       } else {
-        error('Failed to add client. Please try again.');
+        toast.error('Failed to add client. Please try again.');
       }
     } catch (error) {
-      error('Failed to add client. Please try again.');
+      toast.error('Failed to add client. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -122,20 +121,20 @@ function AddClient() {
             }));
           }
           
-          success('Contact information imported successfully!');
+          toast.success('Contact information imported successfully!');
         } else {
           // No contacts selected
         }
       } else {
-        error("Contact selection is not supported on this device/browser");
+        toast.error("Contact selection is not supported on this device/browser");
       }
     } catch (error) {
       if (error.name === 'AbortError') {
         // User cancelled contact selection
       } else if (error.name === 'NotSupportedError') {
-        error("Contact picker not supported on this browser");
+        toast.error("Contact picker not supported on this browser");
       } else {
-        error("Unable to access contacts. Please enter information manually.");
+        toast.error("Unable to access contacts. Please enter information manually.");
       }
     }
   };

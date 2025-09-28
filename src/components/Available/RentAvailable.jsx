@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../api/api-client.js";
 import { useDeleteProperty } from "../../hook/useAddProperty";
+import { toast } from 'react-toastify';
 import "../sold/RentSold.css";
 
 // Fetch function for RentAvailable
@@ -84,7 +85,7 @@ export const RentAvaliable = () => {
     try {
       navigate("/edit-property", { state: { property } });
     } catch (error) {
-      alert("Unable to navigate to edit page. Please try again.");
+      toast.error("Unable to navigate to edit page. Please try again.");
     }
   }, [navigate]);
 
@@ -96,10 +97,10 @@ export const RentAvaliable = () => {
         onSuccess: () => {
           // Invalidate queries to refetch data
           queryClient.invalidateQueries({ queryKey: ["properties"] });
-          alert("Property deleted successfully!");
+          toast.success('Property deleted successfully!');
         },
         onError: (error) => {
-          alert(`Failed to delete property: ${error?.message || "Unknown error"}`);
+          toast.error(`Failed to delete property: ${error?.message || "Unknown error"}`);
         }
       });
     }

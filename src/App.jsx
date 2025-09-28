@@ -17,10 +17,10 @@ import { Client } from "./components/Client";
 import { AddClient } from "./components/AddClient";
 import { ViewClient } from "./components/ViewClient";
 import { EditClient } from "./components/EditClient";
-import ToastContainer from "./components/ToastContainer";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Header from "./components/Header";
 import Logo from "./components/Logo";
-import { useToast } from "./hooks/useToast";
 // import { SellSold } from "./components/sold/SellSold";
 
 
@@ -47,15 +47,24 @@ function Home() {
 }
 
 function App() {
-  const { toasts, removeToast } = useToast();
-  
   useEffect(() => {
   }, []);
 
   return (
     <Router>
       <div>
-        <ToastContainer toasts={toasts} removeToast={removeToast} />
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/sold" element={<Sold />} />

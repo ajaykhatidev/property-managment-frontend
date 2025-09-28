@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useQueryClient } from '@tanstack/react-query';
-import { useUpdateProperty } from "../hook/useAddProperty";
+import { useUpdateProperty, useDeleteProperty } from "../hook/useAddProperty";
+import { toast } from 'react-toastify';
 
 export const Editproperty = () => {
   const [formData, setFormData] = useState({
@@ -27,6 +28,8 @@ export const Editproperty = () => {
   const location = useLocation();
   const queryClient = useQueryClient();
   const updateMutation = useUpdateProperty();
+  const deleteMutation = useDeleteProperty();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   
   // Get property data from navigation state
   const propertyToEdit = location.state?.property;
@@ -63,7 +66,7 @@ export const Editproperty = () => {
     e.preventDefault();
     
     if (!propertyToEdit?._id) {
-      alert("❌ Property ID not found. Please try again.");
+      toast.error("Property ID not found. Please try again.");
       return;
     }
 
@@ -72,14 +75,33 @@ export const Editproperty = () => {
       propertyData: formData
     }, {
       onSuccess: () => {
-        alert("✅ Property updated successfully!");
+        toast.success('Property updated successfully!');
         queryClient.invalidateQueries({ queryKey: ['properties'] });
         navigate(-1); // Go back to previous page
       },
       onError: (error) => {
-        alert(`❌ Failed to update property: ${error?.message || "Unknown error"}`);
+        toast.error(`Failed to update property: ${error?.message || "Unknown error"}`);
       }
     });
+  };
+
+  const handleDelete = () => {
+    if (!propertyToEdit?._id) {
+      toast.error("Property ID not found. Please try again.");
+      return;
+    }
+
+    deleteMutation.mutate(propertyToEdit._id, {
+      onSuccess: () => {
+        toast.success('Property deleted successfully!');
+        queryClient.invalidateQueries({ queryKey: ['properties'] });
+        navigate(-1); // Go back to previous page
+      },
+      onError: (error) => {
+        toast.error(`Failed to delete property: ${error?.message || "Unknown error"}`);
+      }
+    });
+    setShowDeleteModal(false);
   };
 
 const handleSelectFromContacts = async () => {
@@ -123,23 +145,23 @@ const handleSelectFromContacts = async () => {
             return newData;
           });
           
-          alert(`Contact selected: ${contactName ? contactName + ' - ' : ''}${phoneNumber}`); // Success feedback
+          toast.success(`Contact selected: ${contactName ? contactName + ' - ' : ''}${phoneNumber}`);
         } else {
-          alert("Selected contact has no phone number");
+          toast.error("Selected contact has no phone number");
         }
       } else {
       }
     } else {
-      alert("Contact selection is not supported on this device/browser");
+      toast.error("Contact selection is not supported on this device/browser");
     }
   } catch (error) {
     
     // More specific error handling
     if (error.name === 'AbortError') {
     } else if (error.name === 'NotSupportedError') {
-      alert("Contact picker not supported on this browser");
+      toast.error("Contact picker not supported on this browser");
     } else {
-      alert("Unable to access contacts. Please enter number manually.");
+      toast.error("Unable to access contacts. Please enter number manually.");
     }
   }
 };
@@ -474,20 +496,35 @@ const handleSelectFromContacts = async () => {
               borderRadius: "4px",
               cursor: "pointer"
             }}
-            disabled={updateMutation.isPending}
+            disabled={updateMutation.isPending || deleteMutation.isPending}
           >
             Cancel
           </button>
           <button 
-            type="submit" 
-            disabled={updateMutation.isPending}
+            type="button" 
+            onClick={() => setShowDeleteModal(true)}
             style={{
               padding: "12px 24px",
-              background: updateMutation.isPending ? "#ccc" : "#28a745",
+              background: "#dc3545",
               color: "white",
               border: "none",
               borderRadius: "4px",
-              cursor: updateMutation.isPending ? "not-allowed" : "pointer",
+              cursor: "pointer"
+            }}
+            disabled={updateMutation.isPending || deleteMutation.isPending}
+          >
+            {deleteMutation.isPending ? "Deleting..." : "Delete Property"}
+          </button>
+          <button 
+            type="submit" 
+            disabled={updateMutation.isPending || deleteMutation.isPending}
+            style={{
+              padding: "12px 24px",
+              background: (updateMutation.isPending || deleteMutation.isPending) ? "#ccc" : "#28a745",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: (updateMutation.isPending || deleteMutation.isPending) ? "not-allowed" : "pointer",
               flex: 1
             }}
           >
@@ -495,6 +532,66 @@ const handleSelectFromContacts = async () => {
           </button>
         </div>
       </form>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '2rem',
+            borderRadius: '8px',
+            maxWidth: '400px',
+            width: '90%',
+            textAlign: 'center'
+          }}>
+            <h3 style={{ marginBottom: '1rem', color: '#dc3545' }}>Delete Property</h3>
+            <p style={{ marginBottom: '2rem', color: '#666' }}>
+              Are you sure you want to delete this property? This action cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                style={{
+                  padding: '10px 20px',
+                  background: '#6c757d',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+                disabled={deleteMutation.isPending}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                style={{
+                  padding: '10px 20px',
+                  background: '#dc3545',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+                disabled={deleteMutation.isPending}
+              >
+                {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
