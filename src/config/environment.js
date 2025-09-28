@@ -32,10 +32,7 @@ export const switchEnvironment = (env) => {
   if (environments[env]) {
     return environments[env];
   }
-  console.warn(`Environment '${env}' not found. Using development.`);
   return environments.development;
 };
 
 // Log current configuration
-console.log(`🌍 Environment: ${ENVIRONMENT}`);
-console.log(`🔗 API Base URL: ${API_BASE_URL}`);

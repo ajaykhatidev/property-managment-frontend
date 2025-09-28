@@ -6,27 +6,17 @@ import { useUpdateProperty, useDeleteProperty } from "../../hook/useAddProperty"
 import "./RentSold.css";
 
 const fetchProperties = async (filters) => {
-  console.log("🚀 API Call Starting with filters:", filters);
-  console.log("🔗 URL being called:", `API Base URL + /properties`);
   
   try {
     const response = await api.getProperties(filters);
     
-    console.log("✅ API Response received:", response.data);
     return response.data;
   } catch (error) {
-    console.error("❌ API Call Failed:", error);
-    console.error("Error details:", {
-      message: error.message,
-      status: error.response?.status,
-      data: error.response?.data
-    });
     throw error;
   }
 };
 
 export const RentSold = () => {
-  console.log("🎯 RentSold Component Mounted/Re-rendered");
   
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -61,7 +51,6 @@ export const RentSold = () => {
       params.ownership = searchFilters.ownership;
     }
     
-    console.log("✅ Backend query params:", params);
     return params;
   }, [searchFilters.minPrice, searchFilters.maxPrice, searchFilters.bhk, searchFilters.ownership]);
 
@@ -69,7 +58,6 @@ export const RentSold = () => {
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["properties", backendQueryParams],
     queryFn: () => {
-      console.log("🔄 React Query executing with params:", backendQueryParams);
       return fetchProperties(backendQueryParams);
     },
     refetchOnWindowFocus: false, // ✅ Reduced auto-refetching
@@ -130,20 +118,17 @@ export const RentSold = () => {
 
     try {
       setDeletingPropertyId(propertyId);
-      console.log("🗑️ Starting delete for sold property:", propertyId);
       
       await deleteProperty.mutateAsync(propertyId);
       
       // Invalidate queries to refresh the list
       await queryClient.invalidateQueries({ queryKey: ["properties"] });
       
-      console.log("✅ Sold property deleted successfully");
       
       // Optional: Show success notification
       // toast.success("Sold property deleted successfully!");
       
     } catch (error) {
-      console.error("❌ Delete failed:", error);
       
       // More specific error messages
       let errorMessage = "Failed to delete property. Please try again.";
@@ -164,21 +149,18 @@ export const RentSold = () => {
   // ✅ Enhanced edit handler - Option 1: Navigate to edit page
   const handleEditNavigate = useCallback(async (property) => {
     if (!property || !property._id) {
-      console.error("Invalid property data for editing");
       alert("Error: Invalid property data");
       return;
     }
 
     try {
       setEditingPropertyId(property._id);
-      console.log("✏️ Navigating to edit sold property:", property._id);
       
       // Add small delay for visual feedback
       await new Promise(resolve => setTimeout(resolve, 200));
       
       navigate("/edit-property", { state: { property } });
     } catch (error) {
-      console.error("Error navigating to edit page:", error);
       alert("Error opening edit page. Please try again.");
     } finally {
       setEditingPropertyId(null);
@@ -199,7 +181,6 @@ export const RentSold = () => {
 
     try {
       setEditingPropertyId(property._id);
-      console.log("✏️ Quick editing property title:", property._id);
       
       await updateProperty.mutateAsync({
         id: property._id, 
@@ -209,10 +190,8 @@ export const RentSold = () => {
       // Invalidate queries to refresh the list
       await queryClient.invalidateQueries({ queryKey: ["properties"] });
       
-      console.log("✅ Property title updated successfully");
       
     } catch (error) {
-      console.error("❌ Update failed:", error);
       
       let errorMessage = "Failed to update property. Please try again.";
       if (error.response?.status === 404) {

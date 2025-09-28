@@ -14,11 +14,9 @@ export const useAddProperty = () => {
       }
     },
     onSuccess: (data) => {
-      console.log("Property added successfully:", data);
       // Don't show alert here - let the component handle it
     },
     onError: (error) => {
-      console.error("Add property error:", error);
       // Don't show alert here - let the component handle it
     },
   });
@@ -37,11 +35,9 @@ export const useUpdateProperty = () => {
       }
     },
     onSuccess: (data) => {
-      console.log("Property updated successfully:", data);
       // Don't show alert here - let the component handle it
     },
     onError: (error) => {
-      console.error("Update property error:", error);
       // Don't show alert here - let the component handle it
     },
   });
@@ -63,11 +59,9 @@ export const useDeleteProperty = () => {
       }
     },
     onSuccess: (data) => {
-      console.log("Property deleted successfully:", data);
       // Don't show alert here - let the component handle it
     },
     onError: (error) => {
-      console.error("Delete property error:", error);
       // Don't show alert here - let the component handle it
     },
   });
@@ -109,10 +103,8 @@ export const useBulkDeleteProperties = () => {
       }
     },
     onSuccess: (data) => {
-      console.log("Properties deleted successfully:", data);
     },
     onError: (error) => {
-      console.error("Bulk delete error:", error);
     },
   });
 };

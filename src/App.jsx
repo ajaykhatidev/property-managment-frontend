@@ -50,9 +50,6 @@ function App() {
   const { toasts, removeToast } = useToast();
   
   useEffect(() => {
-    console.log('🏠 App component loaded');
-    console.log('🌐 Current URL:', window.location.href);
-    console.log('🔒 Protocol:', window.location.protocol);
   }, []);
 
   return (

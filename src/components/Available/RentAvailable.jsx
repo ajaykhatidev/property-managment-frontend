@@ -84,7 +84,6 @@ export const RentAvaliable = () => {
     try {
       navigate("/edit-property", { state: { property } });
     } catch (error) {
-      console.error("Navigation error:", error);
       alert("Unable to navigate to edit page. Please try again.");
     }
   }, [navigate]);
@@ -100,7 +99,6 @@ export const RentAvaliable = () => {
           alert("Property deleted successfully!");
         },
         onError: (error) => {
-          console.error("Delete error:", error);
           alert(`Failed to delete property: ${error?.message || "Unknown error"}`);
         }
       });

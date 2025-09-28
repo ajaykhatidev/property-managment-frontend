@@ -19,7 +19,6 @@ const apiClient = axios.create({
 });
 
 // Log current API URL
-console.log(`🌍 Using API URL: ${API_URLS[CURRENT_ENV]}`);
 
 export const api = {
   addProperty: (data) => apiClient.post('/properties', data),

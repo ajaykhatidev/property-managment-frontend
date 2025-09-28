@@ -6,27 +6,17 @@ import { useUpdateProperty, useDeleteProperty } from "../../hook/useAddProperty"
 import "../sold/RentSold.css";
 
 const fetchProperties = async (filters) => {
-  console.log("🚀 API Call Starting with filters:", filters);
-  console.log("🔗 URL being called:", `API Base URL + /properties`);
   
   try {
     const response = await api.getProperties(filters);
     
-    console.log("✅ API Response received:", response.data);
     return response.data;
   } catch (error) {
-    console.error("❌ API Call Failed:", error);
-    console.error("Error details:", {
-      message: error.message,
-      status: error.response?.status,
-      data: error.response?.data
-    });
     throw error;
   }
 };
 
 export const LeaseAvailable = () => {
-  console.log("🎯 LeaseAvailable Component Mounted/Re-rendered");
   
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -65,7 +55,6 @@ export const LeaseAvailable = () => {
       params.sector = searchFilters.sector; // Added sector to backend params
     }
     
-    console.log("✅ Backend query params:", params);
     return params;
   }, [searchFilters.minPrice, searchFilters.maxPrice, searchFilters.bhk, searchFilters.ownership, searchFilters.sector]);
 
@@ -73,7 +62,6 @@ export const LeaseAvailable = () => {
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["properties", backendQueryParams],
     queryFn: () => {
-      console.log("🔄 React Query executing with params:", backendQueryParams);
       return fetchProperties(backendQueryParams);
     },
     refetchOnWindowFocus: false, // ✅ Reduced auto-refetching
@@ -144,20 +132,17 @@ export const LeaseAvailable = () => {
 
     try {
       setDeletingPropertyId(propertyId);
-      console.log("🗑️ Starting delete for lease property:", propertyId);
       
       await deleteProperty.mutateAsync(propertyId);
       
       // Invalidate queries to refresh the list
       await queryClient.invalidateQueries({ queryKey: ["properties"] });
       
-      console.log("✅ Lease property deleted successfully");
       
       // Optional: You could show a toast notification here
       // toast.success("Lease property deleted successfully!");
       
     } catch (error) {
-      console.error("❌ Delete failed:", error);
       
       // More specific error messages
       let errorMessage = "Failed to delete property. Please try again.";
@@ -178,21 +163,18 @@ export const LeaseAvailable = () => {
   // ✅ Enhanced edit handler with error handling
   const handleEdit = useCallback(async (property) => {
     if (!property || !property._id) {
-      console.error("Invalid property data for editing");
       alert("Error: Invalid property data");
       return;
     }
 
     try {
       setEditingPropertyId(property._id);
-      console.log("✏️ Navigating to edit lease property:", property._id);
       
       // Optional: You could add a small delay to show the loading state
       await new Promise(resolve => setTimeout(resolve, 200));
       
       navigate("/edit-property", { state: { property } });
     } catch (error) {
-      console.error("Error navigating to edit page:", error);
       alert("Error opening edit page. Please try again.");
     } finally {
       setEditingPropertyId(null);

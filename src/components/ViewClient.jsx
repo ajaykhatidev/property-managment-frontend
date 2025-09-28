@@ -43,11 +43,9 @@ function ViewClient() {
         setCurrentPage(response.data.pagination.currentPage);
         // Clients loaded successfully
       } else {
-        console.error('API returned error:', response.data.message);
         setError(response.data.message || 'Failed to fetch clients');
       }
     } catch (err) {
-      console.error('Error fetching clients:', err);
       setError('Failed to fetch clients');
     } finally {
       setLoading(false);
@@ -90,7 +88,6 @@ function ViewClient() {
           alert('❌ Failed to delete client');
         }
       } catch (err) {
-        console.error('Error deleting client:', err);
         alert('❌ Failed to delete client');
       }
     }

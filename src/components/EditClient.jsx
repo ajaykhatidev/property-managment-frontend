@@ -30,7 +30,6 @@ function EditClient() {
           setError('Failed to load client data');
         }
       } catch (err) {
-        console.error('Error fetching client:', err);
         setError('Failed to load client data');
       } finally {
         setLoading(false);
@@ -82,7 +81,6 @@ function EditClient() {
         alert('❌ Failed to update client. Please try again.');
       }
     } catch (error) {
-      console.error('Error updating client:', error);
       alert('❌ Failed to update client. Please try again.');
     } finally {
       setIsSubmitting(false);
@@ -98,11 +96,9 @@ function EditClient() {
         const opts = { multiple: false };
         const contacts = await navigator.contacts.select(props, opts);
 
-        console.log("Selected contacts:", contacts);
 
         if (contacts.length > 0) {
           const contact = contacts[0];
-          console.log("Contact details:", contact);
           
           // Extract phone number
           if (contact.tel && contact.tel.length > 0) {
@@ -141,16 +137,13 @@ function EditClient() {
           
           alert('✅ Contact information imported successfully!');
         } else {
-          console.log("No contacts selected");
         }
       } else {
         alert("Contact selection is not supported on this device/browser");
       }
     } catch (error) {
-      console.error("Error accessing contacts:", error);
       
       if (error.name === 'AbortError') {
-        console.log("User cancelled contact selection");
       } else if (error.name === 'NotSupportedError') {
         alert("Contact picker not supported on this browser");
       } else {

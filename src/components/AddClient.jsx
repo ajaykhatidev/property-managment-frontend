@@ -27,7 +27,6 @@ function AddClient() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Client Data:', formData);
     
     // Form validation
     if (!formData.clientName.trim()) {
@@ -67,7 +66,6 @@ function AddClient() {
         error('Failed to add client. Please try again.');
       }
     } catch (error) {
-      console.error('Error adding client:', error);
       error('Failed to add client. Please try again.');
     } finally {
       setIsSubmitting(false);
@@ -132,8 +130,6 @@ function AddClient() {
         error("Contact selection is not supported on this device/browser");
       }
     } catch (error) {
-      console.error("Error accessing contacts:", error);
-      
       if (error.name === 'AbortError') {
         // User cancelled contact selection
       } else if (error.name === 'NotSupportedError') {

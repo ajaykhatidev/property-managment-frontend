@@ -80,7 +80,6 @@ export const AddProperty = () => {
       price: Number(formData.price)
     };
 
-    console.log("Submitting property data:", propertyData); // Debug log
 
     mutation.mutate(propertyData, {
       onSuccess: () => {
@@ -107,30 +106,23 @@ export const AddProperty = () => {
         navigate(-1);
       },
       onError: (error) => {
-        console.error("Add property error:", error);
         alert(`❌ Failed to add property: ${error.message}`);
       },
     });
   };
 
 const handleSelectFromContacts = async () => {
-  console.log("Contact picker clicked"); // Debug log
-  
   try {
     if ("contacts" in navigator && "ContactsManager" in window) {
       const props = ["name", "tel"];
       const opts = { multiple: false };
       const contacts = await navigator.contacts.select(props, opts);
 
-      console.log("Selected contacts:", contacts); // Debug log
-
       if (contacts.length > 0) {
         const contact = contacts[0];
-        console.log("Contact details:", contact); // Debug log
         
         if (contact.tel && contact.tel.length > 0) {
           let phoneNumber = contact.tel[0].replace(/\D/g, "");
-          console.log("Original cleaned number:", phoneNumber); // Debug log
           
           // Handle different phone number formats
           if (phoneNumber.length === 11 && phoneNumber.startsWith('1')) {
@@ -144,9 +136,6 @@ const handleSelectFromContacts = async () => {
             phoneNumber = phoneNumber.slice(-10);
           }
           
-          console.log("Processed phone number:", phoneNumber); // Debug log
-          console.log("Phone number length:", phoneNumber.length); // Debug log
-          
           // Get contact name for reference
           const contactName = contact.name && contact.name.length > 0 ? contact.name[0] : "";
           
@@ -157,7 +146,6 @@ const handleSelectFromContacts = async () => {
               phoneNumber,
               reference: contactName || prev.reference // Only update if contact has a name
             };
-            console.log("Updated formData:", newData); // Debug log
             return newData;
           });
           
@@ -165,18 +153,14 @@ const handleSelectFromContacts = async () => {
         } else {
           alert("Selected contact has no phone number");
         }
-      } else {
-        console.log("No contacts selected");
       }
     } else {
       alert("Contact selection is not supported on this device/browser");
     }
   } catch (error) {
-    console.error("Error accessing contacts:", error);
-    
     // More specific error handling
     if (error.name === 'AbortError') {
-      console.log("User cancelled contact selection");
+      // User cancelled contact selection
     } else if (error.name === 'NotSupportedError') {
       alert("Contact picker not supported on this browser");
     } else {
