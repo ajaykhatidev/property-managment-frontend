@@ -1,14 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { api } from "../api/api-client.js";
 
 const fetchProperties = async (filters) => {
-  const { data } = await axios.get(
-    "http://localhost:3000/api/properties",
-    {
-      params: filters,  // ✅ query params ke through backend filtering
-    }
-  );
-  return data;
+  const response = await api.getProperties(filters);
+  return response.data;
 };
 
 export const useGetProperties = (filters = {}) => {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { api } from '../api/api-client.js';
 import './ViewClient.css';
 
 function ViewClient() {
@@ -33,7 +33,7 @@ function ViewClient() {
         ...(requirement && { requirement }),
       };
 
-      const response = await axios.get('http://localhost:3000/api/clients', { params });
+      const response = await api.getClients(params);
       
       // API response received successfully
       
@@ -80,7 +80,7 @@ function ViewClient() {
     
     if (window.confirm('Are you sure you want to delete this client?')) {
       try {
-        const response = await axios.delete(`http://localhost:3000/api/clients/${clientId}`);
+        const response = await api.deleteClient(clientId);
         
         if (response.data.success) {
           alert('✅ Client deleted successfully!');

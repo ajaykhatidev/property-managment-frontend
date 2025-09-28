@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import { api } from '../api/api-client.js';
 import './AddClient.css';
 
 function EditClient() {
@@ -22,7 +22,7 @@ function EditClient() {
   useEffect(() => {
     const fetchClient = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/clients/${id}`);
+        const response = await api.getClient(id);
         
         if (response.data.success) {
           setFormData(response.data.data);
@@ -73,7 +73,7 @@ function EditClient() {
     setIsSubmitting(true);
     
     try {
-      const response = await axios.put(`http://localhost:3000/api/clients/${id}`, formData);
+      const response = await api.updateClient(id, formData);
       
       if (response.data.success) {
         alert('✅ Client updated successfully!');

@@ -1,18 +1,16 @@
 import React, { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import { api } from "../../api/api-client.js";
 import { useUpdateProperty, useDeleteProperty } from "../../hook/useAddProperty";
 import "../sold/RentSold.css";
 
 const fetchProperties = async (filters) => {
   console.log("🚀 API Call Starting with filters:", filters);
-  console.log("🔗 URL being called:", `http://localhost:3000/api/properties`);
+  console.log("🔗 URL being called:", `API Base URL + /properties`);
   
   try {
-    const response = await axios.get("http://localhost:3000/api/properties", {
-      params: filters,
-    });
+    const response = await api.getProperties(filters);
     
     console.log("✅ API Response received:", response.data);
     return response.data;

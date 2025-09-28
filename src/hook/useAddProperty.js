@@ -1,14 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
-
-// Base URL for consistency
-const BASE_URL = "http://localhost:3000/api/properties";
+import { api, default as apiClient } from "../api/api-client.js";
 
 export const useAddProperty = () => {
   return useMutation({
     mutationFn: async (newProperty) => {
       try {
-        const res = await axios.post(BASE_URL, newProperty);
+        const res = await api.addProperty(newProperty);
         return res.data;
       } catch (error) {
         // Enhanced error handling
@@ -31,8 +28,7 @@ export const useUpdateProperty = () => {
   return useMutation({
     mutationFn: async ({ id, propertyData }) => {
       try {
-        // Remove the extra space in URL
-        const res = await axios.put(`${BASE_URL}/${id}`, propertyData);
+        const res = await api.updateProperty(id, propertyData);
         return res.data;
       } catch (error) {
         // Enhanced error handling
@@ -58,7 +54,7 @@ export const useDeleteProperty = () => {
         if (!id) {
           throw new Error("Property ID is required");
         }
-        const res = await axios.delete(`${BASE_URL}/${id}`);
+        const res = await api.deleteProperty(id);
         return res.data;
       } catch (error) {
         // Enhanced error handling
@@ -85,7 +81,7 @@ export const useFetchProperty = () => {
         if (!id) {
           throw new Error("Property ID is required");
         }
-        const res = await axios.get(`${BASE_URL}/${id}`);
+        const res = await api.getProperty(id);
         return res.data;
       } catch (error) {
         const errorMessage = error.response?.data?.message || error.message || "Unknown error occurred";
@@ -103,7 +99,7 @@ export const useBulkDeleteProperties = () => {
         if (!propertyIds || propertyIds.length === 0) {
           throw new Error("Property IDs are required");
         }
-        const res = await axios.delete(`${BASE_URL}/bulk`, {
+        const res = await apiClient.delete('/properties/bulk', {
           data: { ids: propertyIds }
         });
         return res.data;

@@ -1,15 +1,13 @@
 import React, { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import { api } from "../../api/api-client.js";
 import { useDeleteProperty } from "../../hook/useAddProperty";
 import "../sold/RentSold.css";
 
 // Fetch function for RentAvailable
 const fetchRentAvailableProperties = async (filters) => {
-  const response = await axios.get("http://localhost:3000/api/properties", {
-    params: { type: "rentAvailable", ...filters },
-  });
+  const response = await api.getProperties({ type: "rentAvailable", ...filters });
   return response.data;
 };
 

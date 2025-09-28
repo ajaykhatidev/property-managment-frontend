@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { api } from '../api/api-client.js';
 import { useToast } from '../hooks/useToast';
 import './AddClient.css';
 
@@ -46,7 +46,7 @@ function AddClient() {
     setIsSubmitting(true);
     
     try {
-      const response = await axios.post('http://localhost:3000/api/clients', formData);
+      const response = await api.addClient(formData);
       
       if (response.data.success) {
         success('Client added successfully!');
