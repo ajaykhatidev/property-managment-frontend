@@ -349,7 +349,7 @@ export const LeaseAvailable = () => {
                     
                     <div className="property-details">
                       <div className="detail-item">
-                        <strong>Address:</strong> {property.sector}/{property.block}/{property.pocket}/{property.houseNo}
+                        <strong>Address:</strong> {property.sector}/{property.block}/{property.pocket}
                       </div>
                       <div className="detail-item">
                         <strong>Size:</strong> {property.houseNo}
