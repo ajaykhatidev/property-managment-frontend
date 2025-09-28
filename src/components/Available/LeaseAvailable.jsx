@@ -352,6 +352,9 @@ export const LeaseAvailable = () => {
                         <strong>Address:</strong> {property.sector}/{property.block}/{property.pocket}/{property.houseNo}
                       </div>
                       <div className="detail-item">
+                        <strong>Size:</strong> {property.houseNo}
+                      </div>
+                      <div className="detail-item">
                         <strong>BHK:</strong> {property.bhk}
                       </div>
                       <div className="detail-item">
