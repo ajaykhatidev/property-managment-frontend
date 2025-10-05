@@ -209,6 +209,20 @@ const handleSelectFromContacts = async () => {
         fallbackPath="/"
       />
       <form onSubmit={handleSubmit} className="add-property-form">
+
+      <label>
+          Property Category:
+          <select name="propertyCategory" value={formData.propertyCategory || ""} onChange={handleChange}>
+            <option value="">Select Category</option>
+            <option value="residential">Residential</option>
+            <option value="commercial">Commercial</option>
+          </select>
+        </label>
+
+
+
+
+
         {/* Sector */}
         <label>
           Sector:
@@ -367,14 +381,7 @@ const handleSelectFromContacts = async () => {
         </label>
 
 
-        <label>
-          Property Category:
-          <select name="propertyCategory" value={formData.propertyCategory || ""} onChange={handleChange}>
-            <option value="">Select Category</option>
-            <option value="residential">Residential</option>
-            <option value="commercial">Commercial</option>
-          </select>
-        </label>
+        
 
 
         <label>

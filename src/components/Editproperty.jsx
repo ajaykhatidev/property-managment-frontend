@@ -283,6 +283,37 @@ const handleSelectFromContacts = async () => {
       )}
       
       <form onSubmit={handleSubmit} className="add-property-form">
+        {/* Property Category */}
+        <label>
+          Property Category:
+          <select 
+            name="propertyCategory" 
+            value={formData.propertyCategory || ""} 
+            onChange={handleChange}
+            disabled={updateMutation.isPending}
+          >
+            <option value="">Select Category</option>
+            <option value="residential">Residential</option>
+            <option value="commercial">Commercial</option>
+          </select>
+        </label>
+
+        {/* HP/Freehold */}
+        <label>
+          HP / Freehold:
+          <select
+            name="hpOrFreehold"
+            value={formData.hpOrFreehold}
+            onChange={handleChange}
+            disabled={updateMutation.isPending}
+          >
+            <option value="">Select</option>
+            <option value="HP">HP</option>
+            <option value="Freehold">Freehold</option>
+            <option value="Lease">Lease</option> 
+          </select>
+        </label>
+
         {/* Sector */}
         <label>
           Sector:
@@ -461,21 +492,6 @@ const handleSelectFromContacts = async () => {
           </select>
         </label>
 
-        {/* Property Category */}
-        <label>
-          Property Category:
-          <select 
-            name="propertyCategory" 
-            value={formData.propertyCategory || ""} 
-            onChange={handleChange}
-            disabled={updateMutation.isPending}
-          >
-            <option value="">Select Category</option>
-            <option value="residential">Residential</option>
-            <option value="commercial">Commercial</option>
-          </select>
-        </label>
-
         {/* BHK */}
         <label>
           BHK:
@@ -508,22 +524,6 @@ const handleSelectFromContacts = async () => {
             <option value="">Select</option>
             <option value="Rent">Rent</option>
             <option value="Sale">Sale</option>
-            <option value="Lease">Lease</option>
-          </select>
-        </label>
-
-        {/* HP/Freehold */}
-        <label>
-          HP / Freehold:
-          <select
-            name="hpOrFreehold"
-            value={formData.hpOrFreehold}
-            onChange={handleChange}
-            disabled={updateMutation.isPending}
-          >
-            <option value="">Select</option>
-            <option value="HP">HP</option>
-            <option value="Freehold">Freehold</option>
             <option value="Lease">Lease</option>
           </select>
         </label>
