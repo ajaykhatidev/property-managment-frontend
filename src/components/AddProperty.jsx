@@ -17,6 +17,7 @@ export const AddProperty = () => {
     block: "",
     pocket: "",
     floor: "",
+    propertyCategory: "",
     bhk: "",
     rentOrSale: "",
     hpOrFreehold: "",
@@ -123,6 +124,7 @@ export const AddProperty = () => {
           block: "",
           pocket: "",
           floor: "",
+          propertyCategory: "",
           bhk: "",
           rentOrSale: "",
           hpOrFreehold: "",
@@ -363,6 +365,17 @@ const handleSelectFromContacts = async () => {
             <option value="Plot">Plot</option>
           </select>
         </label>
+
+
+        <label>
+          Property Category:
+          <select name="propertyCategory" value={formData.propertyCategory || ""} onChange={handleChange}>
+            <option value="">Select Category</option>
+            <option value="residential">Residential</option>
+            <option value="commercial">Commercial</option>
+          </select>
+        </label>
+
 
         <label>
           BHK:

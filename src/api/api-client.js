@@ -8,7 +8,8 @@ const API_URLS = {
 };
 
 // Change this to switch between local and production
-const CURRENT_ENV = 'production'; // Change to 'local' for development
+const CURRENT_ENV = 'production'; 
+// const CURRENT_ENV = 'local'; 
 
 const apiClient = axios.create({
   baseURL: API_URLS[CURRENT_ENV],

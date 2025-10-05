@@ -31,7 +31,7 @@ export const PropertyList = () => {
                 <strong>BHK:</strong> {property.bhk} | <strong>Status:</strong> {property.status}
               </p>
               <p>
-                <strong>Type:</strong> {property.rentOrSale} | <strong>Ownership:</strong> {property.hpOrFreehold}
+                <strong>Type:</strong> {property.rentOrSale} | <strong>Ownership:</strong> {property.hpOrFreehold} | <strong>Category:</strong> {property.propertyCategory}
               </p>
               <p>
                 <strong>Reference:</strong> {property.reference}

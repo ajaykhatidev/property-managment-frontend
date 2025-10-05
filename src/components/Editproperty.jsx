@@ -16,6 +16,7 @@ export const Editproperty = () => {
     block: "",
     pocket: "",
     floor: "",
+    propertyCategory: "",
     bhk: "",
     rentOrSale: "",
     hpOrFreehold: "",
@@ -50,6 +51,7 @@ export const Editproperty = () => {
         block: propertyToEdit.block || "",
         pocket: propertyToEdit.pocket || "",
         floor: propertyToEdit.floor || "",
+        propertyCategory: propertyToEdit.propertyCategory || "",
         bhk: propertyToEdit.bhk || "",
         rentOrSale: propertyToEdit.rentOrSale || "",
         hpOrFreehold: propertyToEdit.hpOrFreehold || "",
@@ -456,6 +458,21 @@ const handleSelectFromContacts = async () => {
             <option value="5">5th Floor</option>
             <option value="Kothi">Kothi</option>
             <option value="Plot">Plot</option>
+          </select>
+        </label>
+
+        {/* Property Category */}
+        <label>
+          Property Category:
+          <select 
+            name="propertyCategory" 
+            value={formData.propertyCategory || ""} 
+            onChange={handleChange}
+            disabled={updateMutation.isPending}
+          >
+            <option value="">Select Category</option>
+            <option value="residential">Residential</option>
+            <option value="commercial">Commercial</option>
           </select>
         </label>
 

@@ -341,6 +341,9 @@ export const SellSold = () => {
                       <div className="detail-item">
                         <strong>Floor:</strong> {property.floor}
                       </div>
+                      <div className="detail-item">
+                        <strong>Category:</strong> {property.propertyCategory}
+                      </div>
                       <div className="detail-item price-highlight sold-price">
                         <strong>Sold Price:</strong> ₹ {property.price?.toLocaleString("en-IN")}
                       </div>

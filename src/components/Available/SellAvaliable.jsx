@@ -374,6 +374,9 @@ export const SellAvaliable = () => {
                       <div className="detail-item">
                         <strong>Floor:</strong> {property.floor}
                       </div>
+                      <div className="detail-item">
+                        <strong>Category:</strong> {property.propertyCategory}
+                      </div>
                       <div className="detail-item price-highlight">
                         <strong>Price:</strong> ₹ {property.price?.toLocaleString("en-IN")}
                       </div>
