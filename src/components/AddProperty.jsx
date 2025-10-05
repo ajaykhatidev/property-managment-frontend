@@ -10,6 +10,7 @@ export const AddProperty = () => {
     description: "",
     propertyType: "",
     houseNo: "",
+    shopSize: "",
     block: "",
     pocket: "",
     floor: "",
@@ -92,6 +93,7 @@ export const AddProperty = () => {
           description: "",
           propertyType: "",
           houseNo: "",
+          shopSize: "",
           block: "",
           pocket: "",
           floor: "",
@@ -260,16 +262,28 @@ const handleSelectFromContacts = async () => {
         )}
 
         {formData.propertyType === "Shop" && (
-          <label>
-            Shop Size:
-            <input
-              type="text"
-              name="houseNo"
-              value={formData.houseNo}
-              onChange={handleChange}
-              placeholder="Enter shop size (e.g., 10x15, 200 sq ft)"
-            />
-          </label>
+          <>
+            <label>
+              Shop No:
+              <input
+                type="text"
+                name="houseNo"
+                value={formData.houseNo}
+                onChange={handleChange}
+                placeholder="Enter shop number"
+              />
+            </label>
+            <label>
+              Shop Size:
+              <input
+                type="text"
+                name="shopSize"
+                value={formData.shopSize || ""}
+                onChange={handleChange}
+                placeholder="Enter shop size (e.g., 10x15, 200 sq ft)"
+              />
+            </label>
+          </>
         )}
 
         {/* Block */}

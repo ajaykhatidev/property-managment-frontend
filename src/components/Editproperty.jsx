@@ -11,6 +11,7 @@ export const Editproperty = () => {
     description: "",
     propertyType: "",
     houseNo: "",
+    shopSize: "",
     block: "",
     pocket: "",
     floor: "",
@@ -43,6 +44,7 @@ export const Editproperty = () => {
         description: propertyToEdit.description || "",
         propertyType: propertyToEdit.propertyType || "",
         houseNo: propertyToEdit.houseNo || "",
+        shopSize: propertyToEdit.shopSize || "",
         block: propertyToEdit.block || "",
         pocket: propertyToEdit.pocket || "",
         floor: propertyToEdit.floor || "",
@@ -222,20 +224,35 @@ const handleSelectFromContacts = async () => {
                 Sector {i + 1}
               </option>
             ))}
+            <option value="other">Other</option>
           </select>
         </label>
 
         {/* Title */}
         <label>
           Title:
-          <input
-            type="text"
+          <select
             name="title"
             value={formData.title}
             onChange={handleChange}
-            placeholder="Enter property title"
             disabled={updateMutation.isPending}
-          />
+          >
+            <option value="">Select Title</option>
+            <option value="JANTA">JANTA</option>
+            <option value="LIG">LIG</option>
+            <option value="MIG">MIG</option>
+            <option value="HIG">HIG</option>
+            <option value="26M">26M</option>
+            <option value="48M">48M</option>
+            <option value="60M">60M</option>
+            <option value="90M">90M</option>
+            <option value="52M">52M</option>
+            <option value="96M">96M</option>
+            <option value="120M">120M</option>
+            <option value="Plot">Plot</option>
+            <option value="DDA MARKET">DDA MARKET</option>
+            <option value="Others">Others</option>
+          </select>
         </label>
 
         {/* Description */}
@@ -282,17 +299,30 @@ const handleSelectFromContacts = async () => {
         )}
 
         {formData.propertyType === "Shop" && (
-          <label>
-            Shop Size:
-            <input
-              type="text"
-              name="houseNo"
-              value={formData.houseNo}
-              onChange={handleChange}
-              placeholder="Enter shop size (e.g., 10x15, 200 sq ft)"
-              disabled={updateMutation.isPending}
-            />
-          </label>
+          <>
+            <label>
+              Shop No:
+              <input
+                type="text"
+                name="houseNo"
+                value={formData.houseNo}
+                onChange={handleChange}
+                placeholder="Enter shop number"
+                disabled={updateMutation.isPending}
+              />
+            </label>
+            <label>
+              Shop Size:
+              <input
+                type="text"
+                name="shopSize"
+                value={formData.shopSize || ""}
+                onChange={handleChange}
+                placeholder="Enter shop size (e.g., 10x15, 200 sq ft)"
+                disabled={updateMutation.isPending}
+              />
+            </label>
+          </>
         )}
 
         {/* Block */}
@@ -346,14 +376,15 @@ const handleSelectFromContacts = async () => {
             disabled={updateMutation.isPending}
           >
             <option value="">Select Floor</option>
-            {Array.from({ length: 6 }, (_, i) => (
-              <option key={i} value={i}>
-                Floor {i}
-              </option>
-            ))}
+            <option value="0">Ground Floor</option>
+            <option value="1">1st Floor</option>
+            <option value="2">2nd Floor</option>
+            <option value="3">3rd Floor</option>
+            <option value="4">4th Floor</option>
+            <option value="5">5th Floor</option>
+            <option value="Kothi">Kothi</option>
+            <option value="Plot">Plot</option>
           </select>
-          <option>Kothi</option>
-          <option>Plot</option>
         </label>
 
         {/* BHK */}
@@ -368,11 +399,11 @@ const handleSelectFromContacts = async () => {
             <option value="">Select</option>
             <option value="1">1 BHK</option>
             <option value="2">2 BHK</option>
-            <option value="3">3 BHK</option>
+            <option value="3">3 BHK</option>  
             <option value="4">4 BHK</option>
             <option value="5">5 BHK</option>
-            <option value="5">1 RK</option>
-            <option value="5">None</option>
+            <option value="RK">1 RK</option>
+            <option value="0">None</option>
           </select>
         </label>
 
@@ -404,6 +435,7 @@ const handleSelectFromContacts = async () => {
             <option value="">Select</option>
             <option value="HP">HP</option>
             <option value="Freehold">Freehold</option>
+            <option value="Lease">Lease</option>
           </select>
         </label>
 
