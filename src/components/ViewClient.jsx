@@ -237,6 +237,7 @@ function ViewClient() {
                     className="edit-btn"
                     onClick={(e) => handleEditClient(e, client._id)}
                   >
+                    <span className="btn-icon">✏️</span>
                     Edit
                   </button>
                   <button 
@@ -244,6 +245,7 @@ function ViewClient() {
                     className="delete-btn"
                     onClick={(e) => handleDeleteClient(e, client._id)}
                   >
+                    <span className="btn-icon">🗑️</span>
                     Delete
                   </button>
                 </div>

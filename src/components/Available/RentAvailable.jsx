@@ -208,8 +208,16 @@ export const RentAvaliable = () => {
                   
                   <div className="property-details">
                     <div className="detail-item">
-                      <strong>Address:</strong> {property.sector}/{property.block}/{property.pocket}/{property.houseNo}
+                      <strong>Address:</strong> {property.sector}/{property.block}/{property.pocket}
                     </div>
+                    <div className="detail-item">
+                      <strong>{property.propertyType === "Shop" ? "Shop No" : "House No"}:</strong> {property.houseNo}
+                    </div>
+                    {property.propertyType === "Shop" && property.shopSize && (
+                      <div className="detail-item">
+                        <strong>Shop Size:</strong> {property.shopSize}
+                      </div>
+                    )}
                     <div className="detail-item">
                       <strong>BHK:</strong> {property.bhk}
                     </div>
@@ -221,9 +229,6 @@ export const RentAvaliable = () => {
                     </div>
                     <div className="detail-item price-highlight">
                       <strong>Price:</strong> ₹ {property.price?.toLocaleString("en-IN")}
-                    </div>
-                    <div className="detail-item">
-                      <strong>Location:</strong> {property.location}
                     </div>
                     <div className="detail-item">
                       <strong>Reference:</strong> {property.reference}

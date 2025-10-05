@@ -15,10 +15,6 @@ function Client() {
         <Link to="/client/list" className="card">
           View Clients
         </Link>
-
-        <Link to="/client/list" className="card">
-          Search Client
-        </Link>
       </div>
     </div>
   );

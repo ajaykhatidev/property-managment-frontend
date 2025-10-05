@@ -352,8 +352,13 @@ export const LeaseAvailable = () => {
                         <strong>Address:</strong> {property.sector}/{property.block}/{property.pocket}
                       </div>
                       <div className="detail-item">
-                        <strong>Size:</strong> {property.houseNo}
+                        <strong>{property.propertyType === "Shop" ? "Shop No" : "House No"}:</strong> {property.houseNo}
                       </div>
+                      {property.propertyType === "Shop" && property.shopSize && (
+                        <div className="detail-item">
+                          <strong>Shop Size:</strong> {property.shopSize}
+                        </div>
+                      )}
                       <div className="detail-item">
                         <strong>BHK:</strong> {property.bhk}
                       </div>
@@ -365,9 +370,6 @@ export const LeaseAvailable = () => {
                       </div>
                       <div className="detail-item price-highlight">
                         <strong>Lease Price:</strong> ₹ {property.price?.toLocaleString("en-IN")}
-                      </div>
-                      <div className="detail-item">
-                        <strong>Location:</strong> {property.location}
                       </div>
                       <div className="detail-item">
                         <strong>Reference:</strong> {property.reference}

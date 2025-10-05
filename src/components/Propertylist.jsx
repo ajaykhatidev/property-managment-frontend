@@ -19,9 +19,14 @@ export const PropertyList = () => {
               <h3>{property.title}</h3>
               <p>{property.description}</p>
               <p>
-                <strong>House No:</strong> {property.houseNo}, <strong>Block:</strong> {property.block},{" "}
+                <strong>{property.propertyType === "Shop" ? "Shop No" : "House No"}:</strong> {property.houseNo}, <strong>Block:</strong> {property.block},{" "}
                 <strong>Pocket:</strong> {property.pocket}
               </p>
+              {property.propertyType === "Shop" && property.shopSize && (
+                <p>
+                  <strong>Shop Size:</strong> {property.shopSize}
+                </p>
+              )}
               <p>
                 <strong>BHK:</strong> {property.bhk} | <strong>Status:</strong> {property.status}
               </p>
