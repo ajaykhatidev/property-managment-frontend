@@ -19,7 +19,6 @@ import { ViewClient } from "./components/ViewClient";
 import { EditClient } from "./components/EditClient";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Header from "./components/Header";
 import Logo from "./components/Logo";
 // import { SellSold } from "./components/sold/SellSold";
 
@@ -28,19 +27,31 @@ function Home() {
   return (
     <div className="home-container">
       <Link to="/sold" className="card">
-        Sold
+        <div className="card-content">
+          <h3>Sold</h3>
+          <p>View sold properties</p>
+        </div>
       </Link>
 
       <Link to="/abilable" className="card">
-        Available
+        <div className="card-content">
+          <h3>Available</h3>
+          <p>Browse available properties</p>
+        </div>
       </Link>
 
       <Link to="/add-property" className="card add-card">
-        Add Property
+        <div className="card-content">
+          <h3>Add Property</h3>
+          <p>Add new property</p>
+        </div>
       </Link>
 
       <Link to="/client" className="card">
-        Client
+        <div className="card-content">
+          <h3>Client</h3>
+          <p>Manage clients</p>
+        </div>
       </Link>
     </div>
   )
@@ -53,7 +64,6 @@ function App() {
   return (
     <Router>
       <div>
-        <Header />
         <ToastContainer
           position="top-right"
           autoClose={3000}
@@ -64,7 +74,7 @@ function App() {
           pauseOnFocusLoss
           draggable
           pauseOnHover
-          theme="light"
+          theme="dark"
         />
         <Routes>
           <Route path="/" element={<Home />} />

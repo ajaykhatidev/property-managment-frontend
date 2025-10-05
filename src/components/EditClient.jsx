@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api/api-client.js';
 import { toast } from 'react-toastify';
 import './AddClient.css';
+import PageHeader from './Navigation/PageHeader';
+import Breadcrumb from './Navigation/Breadcrumb';
 
 function EditClient() {
   const navigate = useNavigate();
@@ -174,7 +176,12 @@ function EditClient() {
 
   return (
     <div className="add-client-container">
-      <h2>Edit Client</h2>
+      <Breadcrumb />
+      <PageHeader 
+        title="Edit Client" 
+        subtitle="Update client information"
+        fallbackPath="/client/list"
+      />
       
       <form onSubmit={handleSubmit} className="add-client-form">
         {/* Client Information */}

@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useAddProperty } from "../hook/useAddProperty";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
+import PageHeader from './Navigation/PageHeader';
+import Breadcrumb from './Navigation/Breadcrumb';
 
 export const AddProperty = () => {
   const [formData, setFormData] = useState({
@@ -174,7 +176,12 @@ const handleSelectFromContacts = async () => {
 
   return (
     <div className="add-property-container">
-      <h2>Add New Property</h2>
+      <Breadcrumb />
+      <PageHeader 
+        title="Add New Property" 
+        subtitle="Add a new property to your portfolio"
+        fallbackPath="/"
+      />
       <form onSubmit={handleSubmit} className="add-property-form">
         {/* Sector */}
         <label>

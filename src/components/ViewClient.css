@@ -4,8 +4,8 @@
   margin: 0 auto;
   padding: 40px 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  min-height: calc(100vh - 70px);
-  background-color: #f5f7fa;
+  min-height: 100vh;
+  background-color: #121212;
 }
 
 /* Header Section */
@@ -15,7 +15,7 @@
 }
 
 .client-header h2 {
-  color: #2c3e50;
+  color: #f0f0f0;
   margin-bottom: 16px;
   font-size: 2.5rem;
   font-weight: 700;
@@ -58,12 +58,12 @@
 
 /* Search Filters */
 .client-filters {
-  background: #ffffff;
+  background: #1e1e1e;
   padding: 24px;
   border-radius: 12px;
   margin-bottom: 32px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  border: 1px solid #e1e8ed;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  border: 1px solid #444;
 }
 
 .search-box {
@@ -75,17 +75,20 @@
 .search-input {
   width: 100%;
   padding: 12px 16px;
-  border: 2px solid #e1e8ed;
+  border: 2px solid #444;
   border-radius: 8px;
   font-size: 0.95rem;
   transition: all 0.3s ease;
   box-sizing: border-box;
+  background-color: #2a2a2a;
+  color: #f0f0f0;
 }
 
 .search-input:focus {
   outline: none;
   border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+  background-color: #333;
 }
 
 .filter-box {
@@ -94,10 +97,11 @@
 
 .filter-select {
   padding: 12px 16px;
-  border: 2px solid #e1e8ed;
+  border: 2px solid #444;
   border-radius: 8px;
   font-size: 0.95rem;
-  background: white;
+  background: #2a2a2a;
+  color: #f0f0f0;
   cursor: pointer;
   min-width: 140px;
   transition: all 0.3s ease;
@@ -107,7 +111,8 @@
 .filter-select:focus {
   outline: none;
   border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+  background-color: #333;
 }
 
 /* Client Cards Container */
@@ -127,19 +132,19 @@
 
 /* Client Card */
 .client-card {
-  background: #ffffff;
+  background: #1e1e1e;
   border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
   padding: 24px;
   transition: all 0.3s ease;
-  border: 1px solid #e1e8ed;
+  border: 1px solid #444;
   position: relative;
   overflow: hidden;
 }
 
 .client-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
   border-color: #3498db;
 }
 
@@ -162,7 +167,7 @@
 }
 
 .client-card-header h3 {
-  color: #2c3e50;
+  color: #f0f0f0;
   font-size: 1.4rem;
   font-weight: 700;
   margin: 0;
@@ -192,35 +197,35 @@
 
 .info-item {
   font-size: 0.9rem;
-  color: #34495e;
+  color: #ccc;
   display: flex;
   align-items: flex-start;
   gap: 8px;
 }
 
 .info-label {
-  color: #2c3e50;
+  color: #f0f0f0;
   font-weight: 600;
   min-width: 80px;
   flex-shrink: 0;
 }
 
 .info-value {
-  color: #34495e;
+  color: #ccc;
 }
 
 .info-value.budget-highlight {
-  background: #e8f5e8;
+  background: rgba(39, 174, 96, 0.2);
   padding: 12px;
   border-radius: 8px;
   border: 2px solid #27ae60;
   font-weight: 600;
-  color: #27ae60;
+  color: #2ecc71;
 }
 
 .description-text {
   line-height: 1.5;
-  color: #5a6c7d;
+  color: #bbb;
 }
 
 /* Card Footer */
@@ -230,12 +235,12 @@
   align-items: center;
   margin-top: 20px;
   padding-top: 16px;
-  border-top: 1px solid #ecf0f1;
+  border-top: 1px solid #444;
 }
 
 .client-date {
   font-size: 0.8rem;
-  color: #7f8c8d;
+  color: #999;
 }
 
 .client-actions {

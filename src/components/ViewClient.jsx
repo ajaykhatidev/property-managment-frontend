@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../api/api-client.js';
 import { toast } from 'react-toastify';
 import './ViewClient.css';
+import PageHeader from './Navigation/PageHeader';
+import Breadcrumb from './Navigation/Breadcrumb';
 
 function ViewClient() {
   const navigate = useNavigate();
@@ -134,12 +136,18 @@ function ViewClient() {
 
   return (
     <div className="view-client-container">
-      <div className="client-header">
-        <h2>Client Management</h2>
-        <Link to="/client/add" className="add-client-btn">
-          + Add New Client
-        </Link>
-      </div>
+      <Breadcrumb />
+      <PageHeader 
+        title="Client Management" 
+        subtitle="View and manage all your clients"
+        fallbackPath="/client"
+        customActions={
+          <Link to="/client/add" className="quick-action-btn primary">
+            <span>➕</span>
+            Add New Client
+          </Link>
+        }
+      />
 
       {/* Search and Filter */}
       <div className="client-filters">

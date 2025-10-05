@@ -4,8 +4,8 @@ import { useGetProperties } from "../hook/useGetProperties";
 export const PropertyList = () => {
   const { data, isLoading, isError, error } = useGetProperties();
 
-  if (isLoading) return <p>Loading properties...</p>;
-  if (isError) return <p>Error: {error.message}</p>;
+  if (isLoading) return <div className="property-list"><p>Loading properties...</p></div>;
+  if (isError) return <div className="property-list"><p>Error: {error.message}</p></div>;
 
   return (
     <div className="property-list">

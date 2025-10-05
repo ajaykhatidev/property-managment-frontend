@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../api/api-client.js';
 import { toast } from 'react-toastify';
 import './AddClient.css';
+import PageHeader from './Navigation/PageHeader';
+import Breadcrumb from './Navigation/Breadcrumb';
 
 function AddClient() {
   const navigate = useNavigate();
@@ -141,7 +143,12 @@ function AddClient() {
 
   return (
     <div className="add-client-container">
-      <h2>Add New Client</h2>
+      <Breadcrumb />
+      <PageHeader 
+        title="Add New Client" 
+        subtitle="Add a new client to your database"
+        fallbackPath="/client"
+      />
       
       <form onSubmit={handleSubmit} className="add-client-form">
         {/* Client Information */}

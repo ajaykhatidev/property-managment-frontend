@@ -2,17 +2,17 @@
   padding: 60px 20px;
   max-width: 1200px;
   margin: 0 auto;
-  min-height: calc(100vh - 70px);
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background-color: #f5f7fa;
+  background-color: #121212;
 }
 
 .client-container h2 {
   text-align: center;
   margin-bottom: 50px;
-  color: #2c3e50;
+  color: #f0f0f0;
   font-size: 2.5rem;
   font-weight: 700;
   position: relative;
@@ -42,26 +42,26 @@
 }
 
 .client-cards .card {
-  background: linear-gradient(135deg, #ffffff, #f8f9fa);
-  border: 2px solid #e1e8ed;
+  background: linear-gradient(135deg, #1e1e1e, #2a2a2a);
+  border: 2px solid #444;
   border-radius: 16px;
   padding: 48px 40px;
   text-align: center;
   text-decoration: none;
-  color: #2c3e50;
+  color: #f0f0f0;
   font-size: 1.3rem;
   font-weight: 700;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
   min-width: 220px;
   flex: 0 0 auto;
 }
 
 .client-cards .card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
   border-color: #3498db;
-  background: linear-gradient(135deg, #f8f9fa, #ffffff);
+  background: linear-gradient(135deg, #2a2a2a, #1e1e1e);
 }
 
 .client-cards .add-card {

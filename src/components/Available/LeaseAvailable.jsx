@@ -5,6 +5,8 @@ import { api } from "../../api/api-client.js";
 import { useUpdateProperty, useDeleteProperty } from "../../hook/useAddProperty";
 import { toast } from 'react-toastify';
 import "../sold/RentSold.css";
+import PageHeader from '../Navigation/PageHeader';
+import Breadcrumb from '../Navigation/Breadcrumb';
 
 const fetchProperties = async (filters) => {
   
@@ -243,10 +245,14 @@ export const LeaseAvailable = () => {
 
   return (
     <div className="rent-sold-list">
+      <Breadcrumb />
+      <PageHeader 
+        title="Available Properties" 
+        subtitle="Properties available for lease"
+        fallbackPath="/abilable"
+      />
+      
       <div className="header-section">
-        <h2>
-          Available Properties <span className="sold-badge">Lease</span>
-        </h2>
         <div className="results-count">
           Found {filteredProperties.length} properties
         </div>
