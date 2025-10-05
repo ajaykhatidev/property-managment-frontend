@@ -31,6 +31,7 @@ export const LeaseAvailable = () => {
     bhk: "",
     ownership: "",
     sector: "", // Added sector filter
+    propertyCategory: "", // Added property category filter
   });
 
   // Track which property is being deleted/edited for better UX
@@ -96,10 +97,12 @@ export const LeaseAvailable = () => {
         searchText === "" ||
         property.title?.toLowerCase().includes(searchText) ||
         property.houseNo?.toString().toLowerCase().includes(searchText) ||
+        property.shopNo?.toString().toLowerCase().includes(searchText) ||
         property.block?.toLowerCase().includes(searchText) ||
         property.pocket?.toLowerCase().includes(searchText) ||
         property.reference?.toLowerCase().includes(searchText) ||
-        property.sector?.toLowerCase().includes(searchText); // Added sector to text search
+        property.sector?.toLowerCase().includes(searchText) ||
+        property.propertyCategory?.toLowerCase().includes(searchText); // Added propertyCategory to text search
 
       // Additional client-side filters (for immediate feedback)
       const price = property.price || 0;
@@ -116,7 +119,10 @@ export const LeaseAvailable = () => {
       const matchesSector =
         searchFilters.sector === "" || property.sector === searchFilters.sector;
 
-      return matchesText && matchesPrice && matchesBHK && matchesOwnership && matchesSector;
+      const matchesCategory =
+        searchFilters.propertyCategory === "" || property.propertyCategory === searchFilters.propertyCategory;
+
+      return matchesText && matchesPrice && matchesBHK && matchesOwnership && matchesSector && matchesCategory;
     });
   }, [properties, searchFilters]);
 
@@ -193,6 +199,7 @@ export const LeaseAvailable = () => {
       bhk: "",
       ownership: "",
       sector: "", // Added sector to clear filters
+      propertyCategory: "", // Added propertyCategory to clear filters
     });
   }, []);
 
@@ -219,6 +226,10 @@ export const LeaseAvailable = () => {
 
   const handleSectorChange = useCallback((e) => {
     setSearchFilters(prev => ({ ...prev, sector: e.target.value }));
+  }, []);
+
+  const handleCategoryChange = useCallback((e) => {
+    setSearchFilters(prev => ({ ...prev, propertyCategory: e.target.value }));
   }, []);
 
   // ✅ Loading and error states with better UI
@@ -263,7 +274,7 @@ export const LeaseAvailable = () => {
         <div className="filter-row">
           <input
             type="text"
-            placeholder="Search by title, house no, block, pocket, reference, sector..."
+            placeholder="Search by title, house no, shop no, block, pocket, reference, sector, category..."
             value={searchFilters.searchText}
             onChange={handleSearchTextChange}
             className="search-input"
@@ -301,15 +312,16 @@ export const LeaseAvailable = () => {
             <option value="4">4 BHK</option>
             <option value="5">5+ BHK</option>
           </select>
-          
+
           <select
             value={searchFilters.ownership}
             onChange={handleOwnershipChange}
             className="filter-select"
           >
             <option value="">All Ownership</option>
-            <option value="Leasehold">Leasehold</option>
+            <option value="HP">HP</option>
             <option value="Freehold">Freehold</option>
+            <option value="Lease">Lease</option>
           </select>
 
           {/* Added Sector Filter Dropdown */}
@@ -324,6 +336,17 @@ export const LeaseAvailable = () => {
                 {sector}
               </option>
             ))}
+          </select>
+
+          {/* Added Property Category Filter Dropdown */}
+          <select
+            value={searchFilters.propertyCategory}
+            onChange={handleCategoryChange}
+            className="filter-select"
+          >
+            <option value="">All Categories</option>
+            <option value="residential">Residential</option>
+            <option value="commercial">Commercial</option>
           </select>
         </div>
       </div>

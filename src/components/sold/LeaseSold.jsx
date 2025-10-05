@@ -30,6 +30,8 @@ export const LeaseSold = () => {
     maxPrice: "",
     bhk: "",
     ownership: "",
+    sector: "", // Added sector filter
+    propertyCategory: "", // Added property category filter
   });
 
   // Track which property is being deleted/edited for better UX
@@ -73,6 +75,12 @@ export const LeaseSold = () => {
 
   const properties = data?.properties || [];
 
+  // Extract unique sectors for the dropdown
+  const availableSectors = useMemo(() => {
+    const sectors = [...new Set(properties.map(property => property.sector).filter(Boolean))];
+    return sectors.sort();
+  }, [properties]);
+
   // ✅ Client-side filtering with text search
   const filteredProperties = useMemo(() => {
     return properties.filter((property) => {
@@ -86,9 +94,12 @@ export const LeaseSold = () => {
         searchText === "" ||
         property.title?.toLowerCase().includes(searchText) ||
         property.houseNo?.toString().toLowerCase().includes(searchText) ||
+        property.shopNo?.toString().toLowerCase().includes(searchText) ||
         property.block?.toLowerCase().includes(searchText) ||
         property.pocket?.toLowerCase().includes(searchText) ||
-        property.reference?.toLowerCase().includes(searchText);
+        property.reference?.toLowerCase().includes(searchText) ||
+        property.sector?.toLowerCase().includes(searchText) ||
+        property.propertyCategory?.toLowerCase().includes(searchText); // Added propertyCategory to text search
 
       // Additional client-side filters (for immediate feedback)
       const price = property.price || 0;
@@ -101,6 +112,14 @@ export const LeaseSold = () => {
       const matchesOwnership =
         searchFilters.ownership === "" ||
         property.hpOrFreehold?.toLowerCase().includes(searchFilters.ownership.toLowerCase());
+
+      const matchesSector =
+        searchFilters.sector === "" || property.sector === searchFilters.sector;
+
+      const matchesCategory =
+        searchFilters.propertyCategory === "" || property.propertyCategory === searchFilters.propertyCategory;
+
+      return matchesText && matchesPrice && matchesBHK && matchesOwnership && matchesSector && matchesCategory;
 
       return matchesText && matchesPrice && matchesBHK && matchesOwnership;
     });
@@ -178,6 +197,8 @@ export const LeaseSold = () => {
       maxPrice: "",
       bhk: "",
       ownership: "",
+      sector: "", // Added sector to clear filters
+      propertyCategory: "", // Added propertyCategory to clear filters
     });
   }, []);
 
@@ -200,6 +221,14 @@ export const LeaseSold = () => {
 
   const handleOwnershipChange = useCallback((e) => {
     setSearchFilters(prev => ({ ...prev, ownership: e.target.value }));
+  }, []);
+
+  const handleCategoryChange = useCallback((e) => {
+    setSearchFilters(prev => ({ ...prev, propertyCategory: e.target.value }));
+  }, []);
+
+  const handleSectorChange = useCallback((e) => {
+    setSearchFilters(prev => ({ ...prev, sector: e.target.value }));
   }, []);
 
   // ✅ Loading and error states with better UI
@@ -244,7 +273,7 @@ export const LeaseSold = () => {
         <div className="filter-row">
           <input
             type="text"
-            placeholder="Search by title, house no, block, pocket, reference..."
+            placeholder="Search by title, house no, shop no, block, pocket, reference, sector, category..."
             value={searchFilters.searchText}
             onChange={handleSearchTextChange}
             className="search-input"
@@ -282,15 +311,39 @@ export const LeaseSold = () => {
             <option value="4">4 BHK</option>
             <option value="5">5+ BHK</option>
           </select>
-          
+
           <select
             value={searchFilters.ownership}
             onChange={handleOwnershipChange}
             className="filter-select"
           >
             <option value="">All Ownership</option>
-            <option value="Leasehold">Leasehold</option>
+            <option value="HP">HP</option>
             <option value="Freehold">Freehold</option>
+            <option value="Lease">Lease</option>
+          </select>
+
+          <select
+            value={searchFilters.propertyCategory}
+            onChange={handleCategoryChange}
+            className="filter-select"
+          >
+            <option value="">All Categories</option>
+            <option value="residential">Residential</option>
+            <option value="commercial">Commercial</option>
+          </select>
+
+          <select
+            value={searchFilters.sector}
+            onChange={handleSectorChange}
+            className="filter-select"
+          >
+            <option value="">All Sectors</option>
+            {availableSectors.map((sector) => (
+              <option key={sector} value={sector}>
+                {sector}
+              </option>
+            ))}
           </select>
         </div>
       </div>
