@@ -102,6 +102,38 @@ html, body {
   align-items: stretch;
 }
 
+/* Laptop/Desktop Layout */
+@media (min-width: 1024px) {
+  .home-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
+    gap: 24px;
+    padding: 40px;
+    max-width: 1200px;
+  }
+  
+  .card {
+    flex: 0 0 calc(50% - 12px);
+    max-width: 300px;
+    min-height: 120px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .home-container {
+    gap: 32px;
+    padding: 60px;
+  }
+  
+  .card {
+    flex: 0 0 calc(33.333% - 22px);
+    max-width: 350px;
+    min-height: 140px;
+  }
+}
+
 .card {
   padding: 24px;
   border: none;
@@ -297,6 +329,64 @@ input, select, textarea {
   margin: 0 auto;
 }
 
+/* Laptop/Desktop Layout for Navigation Pages */
+@media (min-width: 1024px) {
+  .card-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 24px;
+    padding: 40px;
+    max-width: 1000px;
+  }
+  
+  .card-container .card {
+    flex: 0 0 calc(33.333% - 16px);
+    max-width: 300px;
+    min-height: 120px;
+  }
+  
+  .client-cards {
+    flex-direction: row;
+    justify-content: center;
+    gap: 24px;
+    padding: 40px;
+    max-width: 800px;
+  }
+  
+  .client-cards .card {
+    flex: 0 0 calc(50% - 12px);
+    max-width: 350px;
+    min-height: 120px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .card-container {
+    gap: 32px;
+    padding: 60px;
+    max-width: 1200px;
+  }
+  
+  .card-container .card {
+    flex: 0 0 calc(25% - 24px);
+    max-width: 280px;
+    min-height: 140px;
+  }
+  
+  .client-cards {
+    gap: 32px;
+    padding: 60px;
+    max-width: 1000px;
+  }
+  
+  .client-cards .card {
+    flex: 0 0 calc(50% - 16px);
+    max-width: 400px;
+    min-height: 140px;
+  }
+}
+
 /* ======================= */
 /* Add Property Form Section */
 /* ======================= */
@@ -342,6 +432,55 @@ input, select, textarea {
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   border: 1px solid #444;
+}
+
+/* Laptop/Desktop Form Layout */
+@media (min-width: 1024px) {
+  .add-property-form {
+    max-width: 800px;
+    padding: 50px;
+    gap: 28px;
+  }
+  
+  .add-property-form label {
+    font-size: 16px;
+  }
+  
+  .add-property-form input,
+  .add-property-form textarea,
+  .add-property-form select {
+    font-size: 16px;
+    padding: 14px 18px;
+  }
+  
+  .add-property-form button {
+    font-size: 18px;
+    padding: 16px 32px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .add-property-form {
+    max-width: 900px;
+    padding: 60px;
+    gap: 32px;
+  }
+  
+  .add-property-form label {
+    font-size: 17px;
+  }
+  
+  .add-property-form input,
+  .add-property-form textarea,
+  .add-property-form select {
+    font-size: 17px;
+    padding: 16px 20px;
+  }
+  
+  .add-property-form button {
+    font-size: 19px;
+    padding: 18px 36px;
+  }
 }
 
 .add-property-form label {

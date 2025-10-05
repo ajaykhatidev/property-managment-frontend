@@ -416,6 +416,119 @@
   opacity: 0.8;
 }
 
+/* Laptop/Desktop Layout */
+@media (min-width: 1024px) {
+  .rent-sold-list {
+    padding: 40px;
+    max-width: 1200px;
+  }
+  
+  .search-filters {
+    padding: 30px;
+    gap: 20px;
+  }
+  
+  .filter-row {
+    flex-direction: row;
+    gap: 20px;
+    align-items: end;
+  }
+  
+  .search-input {
+    min-width: 300px;
+    font-size: 16px;
+    padding: 14px 18px;
+  }
+  
+  .price-input {
+    width: 160px;
+    font-size: 16px;
+    padding: 14px 18px;
+  }
+  
+  .filter-select {
+    min-width: 160px;
+    font-size: 16px;
+    padding: 14px 18px;
+  }
+  
+  .clear-btn {
+    font-size: 16px;
+    padding: 14px 24px;
+  }
+  
+  .property-card {
+    padding: 28px;
+  }
+  
+  .property-title {
+    font-size: 1.5rem;
+  }
+  
+  .property-description {
+    font-size: 1rem;
+  }
+  
+  .detail-item {
+    font-size: 0.95rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  .rent-sold-list {
+    padding: 60px;
+    max-width: 1400px;
+  }
+  
+  .search-filters {
+    padding: 40px;
+    gap: 24px;
+  }
+  
+  .filter-row {
+    gap: 24px;
+  }
+  
+  .search-input {
+    min-width: 350px;
+    font-size: 17px;
+    padding: 16px 20px;
+  }
+  
+  .price-input {
+    width: 180px;
+    font-size: 17px;
+    padding: 16px 20px;
+  }
+  
+  .filter-select {
+    min-width: 180px;
+    font-size: 17px;
+    padding: 16px 20px;
+  }
+  
+  .clear-btn {
+    font-size: 17px;
+    padding: 16px 28px;
+  }
+  
+  .property-card {
+    padding: 32px;
+  }
+  
+  .property-title {
+    font-size: 1.6rem;
+  }
+  
+  .property-description {
+    font-size: 1.05rem;
+  }
+  
+  .detail-item {
+    font-size: 1rem;
+  }
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .rent-sold-list {

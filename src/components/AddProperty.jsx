@@ -12,6 +12,7 @@ export const AddProperty = () => {
     description: "",
     propertyType: "",
     houseNo: "",
+    shopNo: "",
     shopSize: "",
     block: "",
     pocket: "",
@@ -30,7 +31,19 @@ export const AddProperty = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    
+    // Clear opposite fields when switching property type
+    if (name === 'propertyType') {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+        houseNo: value === 'House' ? prev.houseNo : '',
+        shopNo: value === 'Shop' ? prev.shopNo : '',
+        shopSize: value === 'Shop' ? prev.shopSize : ''
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = (e) => {
@@ -53,8 +66,16 @@ export const AddProperty = () => {
       toast.error('Please select property type');
       return;
     }
-    if (!formData.houseNo.trim()) {
-      toast.error('Please enter house number/shop size');
+    if (formData.propertyType === "House" && !formData.houseNo.trim()) {
+      toast.error('Please enter house number');
+      return;
+    }
+    if (formData.propertyType === "Shop" && !formData.shopNo.trim()) {
+      toast.error('Please enter shop number');
+      return;
+    }
+    if (formData.propertyType === "Shop" && !formData.shopSize.trim()) {
+      toast.error('Please enter shop size');
       return;
     }
     if (!formData.bhk) {
@@ -84,6 +105,8 @@ export const AddProperty = () => {
       price: Number(formData.price)
     };
 
+    console.log('📝 Sending property data:', propertyData);
+
 
     mutation.mutate(propertyData, {
       onSuccess: () => {
@@ -95,6 +118,7 @@ export const AddProperty = () => {
           description: "",
           propertyType: "",
           houseNo: "",
+          shopNo: "",
           shopSize: "",
           block: "",
           pocket: "",
@@ -274,8 +298,8 @@ const handleSelectFromContacts = async () => {
               Shop No:
               <input
                 type="text"
-                name="houseNo"
-                value={formData.houseNo}
+                name="shopNo"
+                value={formData.shopNo}
                 onChange={handleChange}
                 placeholder="Enter shop number"
               />

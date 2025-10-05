@@ -11,6 +11,7 @@ export const Editproperty = () => {
     description: "",
     propertyType: "",
     houseNo: "",
+    shopNo: "",
     shopSize: "",
     block: "",
     pocket: "",
@@ -44,6 +45,7 @@ export const Editproperty = () => {
         description: propertyToEdit.description || "",
         propertyType: propertyToEdit.propertyType || "",
         houseNo: propertyToEdit.houseNo || "",
+        shopNo: propertyToEdit.shopNo || "",
         shopSize: propertyToEdit.shopSize || "",
         block: propertyToEdit.block || "",
         pocket: propertyToEdit.pocket || "",
@@ -61,7 +63,19 @@ export const Editproperty = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    
+    // Clear opposite fields when switching property type
+    if (name === 'propertyType') {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+        houseNo: value === 'House' ? prev.houseNo : '',
+        shopNo: value === 'Shop' ? prev.shopNo : '',
+        shopSize: value === 'Shop' ? prev.shopSize : ''
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = (e) => {
@@ -72,9 +86,67 @@ export const Editproperty = () => {
       return;
     }
 
+    // Form validation
+    if (!formData.sector) {
+      toast.error('Please select a sector');
+      return;
+    }
+    if (!formData.title) {
+      toast.error('Please select a title');
+      return;
+    }
+    if (!formData.description.trim()) {
+      toast.error('Please enter description');
+      return;
+    }
+    if (!formData.propertyType) {
+      toast.error('Please select property type');
+      return;
+    }
+    if (formData.propertyType === "House" && !formData.houseNo.trim()) {
+      toast.error('Please enter house number');
+      return;
+    }
+    if (formData.propertyType === "Shop" && !formData.shopNo.trim()) {
+      toast.error('Please enter shop number');
+      return;
+    }
+    if (formData.propertyType === "Shop" && !formData.shopSize.trim()) {
+      toast.error('Please enter shop size');
+      return;
+    }
+    if (!formData.bhk) {
+      toast.error('Please select BHK');
+      return;
+    }
+    if (!formData.rentOrSale) {
+      toast.error('Please select Rent/Sale/Lease');
+      return;
+    }
+    if (!formData.hpOrFreehold) {
+      toast.error('Please select HP/Freehold/Lease');
+      return;
+    }
+    if (!formData.price || formData.price <= 0) {
+      toast.error('Please enter a valid price');
+      return;
+    }
+    if (!formData.phoneNumber || formData.phoneNumber.length !== 10) {
+      toast.error('Please enter a valid 10-digit phone number');
+      return;
+    }
+
+    // Convert price to number
+    const propertyData = {
+      ...formData,
+      price: Number(formData.price)
+    };
+
+    console.log('📝 Updating property data:', propertyData);
+
     updateMutation.mutate({
       id: propertyToEdit._id,
-      propertyData: formData
+      propertyData: propertyData
     }, {
       onSuccess: () => {
         toast.success('Property updated successfully!');
@@ -304,8 +376,8 @@ const handleSelectFromContacts = async () => {
               Shop No:
               <input
                 type="text"
-                name="houseNo"
-                value={formData.houseNo}
+                name="shopNo"
+                value={formData.shopNo}
                 onChange={handleChange}
                 placeholder="Enter shop number"
                 disabled={updateMutation.isPending}

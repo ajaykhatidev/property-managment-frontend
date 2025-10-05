@@ -358,7 +358,7 @@ export const LeaseAvailable = () => {
                         <strong>Address:</strong> {property.sector}/{property.block}/{property.pocket}
                       </div>
                       <div className="detail-item">
-                        <strong>{property.propertyType === "Shop" ? "Shop No" : "House No"}:</strong> {property.houseNo}
+                        <strong>{property.propertyType === "Shop" ? "Shop No" : "House No"}:</strong> {property.propertyType === "Shop" ? property.shopNo : property.houseNo}
                       </div>
                       {property.propertyType === "Shop" && property.shopSize && (
                         <div className="detail-item">
