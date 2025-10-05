@@ -2,9 +2,9 @@
 html, body {
   margin: 0;
   padding: 0;
-  font-family: Arial, sans-serif;
-  background-color: #121212; /* Dark background */
-  color: #f0f0f0; /* Light text */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f7fa;
+  color: #2c3e50;
 }
 
 /* ======================= */
@@ -12,42 +12,47 @@ html, body {
 /* ======================= */
 .home-container {
   display: flex;
-  gap: 20px;
+  gap: 24px;
   justify-content: center;
   flex-wrap: wrap;
-  margin-top: 50px;
-  padding: 0 20px;
-  min-height: 100vh; /* Full height */
+  padding: 60px 20px;
+  min-height: calc(100vh - 70px);
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: center;
 }
 
 .card {
-  padding: 20px;
-  border: 1px solid #444;
+  padding: 32px;
+  border: 2px solid #e1e8ed;
   cursor: pointer;
   text-align: center;
-  width: 150px;
-  height: 100px;
+  width: 200px;
+  height: 160px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-weight: bold;
-  font-size: 18px;
-  border-radius: 10px;
-  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
-  background-color: #1e1e1e; /* Dark card background */
-  color: #f0f0f0; /* Light text */
+  font-weight: 700;
+  font-size: 20px;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #ffffff, #f8f9fa);
+  color: #2c3e50;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .card a {
   text-decoration: none;
-  color: inherit; /* Inherit color from card */
+  color: inherit;
 }
 
-/* Hover effect */
 .card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 16px rgba(255, 255, 255, 0.1);
-  background-color: #333; /* Slightly lighter on hover */
+  transform: translateY(-8px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  border-color: #3498db;
 }
 
 /* Responsive adjustments for cards */
@@ -78,41 +83,76 @@ html, body {
 /* Add Property Form Section */
 /* ======================= */
 .add-property-container {
-  background-color: #121212;
-  color: #fff;
-  padding: 30px;
+  background-color: #f5f7fa;
+  color: #2c3e50;
+  padding: 40px 20px;
   min-height: 100vh;
 }
 
 .add-property-container h2 {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  padding: 20px 0;
+}
+
+.add-property-container h2::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, #3498db, #2ecc71);
+  border-radius: 2px;
 }
 
 .add-property-form {
-  max-width: 600px;
+  max-width: 700px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e1e8ed;
 }
 
 .add-property-form label {
   display: flex;
   flex-direction: column;
-  font-weight: bold;
-  font-size: 16px;
+  font-weight: 600;
+  font-size: 15px;
+  color: #2c3e50;
 }
 
 .add-property-form input,
 .add-property-form textarea,
 .add-property-form select {
-  margin-top: 5px;
-  padding: 10px;
-  border-radius: 5px;
-  border: none;
-  background-color: #1e1e1e;
-  color: #fff;
+  margin-top: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 2px solid #e1e8ed;
+  background-color: #ffffff;
+  color: #2c3e50;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+.add-property-form input:focus,
+.add-property-form textarea:focus,
+.add-property-form select:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
 .add-property-form textarea {
@@ -121,18 +161,28 @@ html, body {
 }
 
 .add-property-form button {
-  padding: 12px;
-  border-radius: 5px;
+  padding: 14px 24px;
+  border-radius: 8px;
   border: none;
-  background-color: #0066cc;
-  color: #fff;
-  font-weight: bold;
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.3s ease;
+  margin-top: 16px;
 }
 
-.add-property-form button:hover {
-  background-color: #004a99;
+.add-property-form button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #229954, #27ae60);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(39, 174, 96, 0.3);
+}
+
+.add-property-form button:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* Responsive adjustments for form */
@@ -149,21 +199,43 @@ html, body {
 .sold-container,
 .abilable-container {
   text-align: center;
-  padding: 40px 20px;
-  min-height: 100vh;
+  padding: 60px 20px;
+  min-height: calc(100vh - 70px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .sold-container h2,
 .abilable-container h2 {
-  font-size: 28px;
-  margin-bottom: 20px;
-  color: #f0f0f0;
+  font-size: 2.5rem;
+  margin-bottom: 50px;
+  color: #2c3e50;
+  font-weight: 700;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  padding: 20px 0;
+}
+
+.sold-container h2::before,
+.abilable-container h2::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, #3498db, #2ecc71);
+  border-radius: 2px;
 }
 
 .card-container {
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 24px;
   flex-wrap: wrap;
-  margin-top: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }

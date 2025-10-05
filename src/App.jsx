@@ -53,6 +53,7 @@ function App() {
   return (
     <Router>
       <div>
+        <Header />
         <ToastContainer
           position="top-right"
           autoClose={3000}
@@ -72,7 +73,6 @@ function App() {
           <Route path="/add-property" element={<AddProperty />} />
           <Route path="/sellSold/:type" element={<SellSold />} />
           <Route path="/rentSold/:type" element={<RentSold />} />
-          {/* <Route path="/All" element={<PropertyList />} /> */}
           <Route path="/edit-property" element={<Editproperty />} />
           <Route path="/SellAvaliable/:type" element={<SellAvaliable />} />
           <Route path="/rentAvaliable/:type" element={<RentAvaliable />} />

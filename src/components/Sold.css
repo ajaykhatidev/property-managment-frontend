@@ -1,58 +1,98 @@
 .sold-container {
-  padding: 40px 20px;
-  min-height: 100vh;
-  background-color: #121212;
-  color: #f0f0f0;
+  padding: 60px 20px;
+  min-height: calc(100vh - 70px);
+  background-color: #f5f7fa;
+  color: #2c3e50;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
 }
 
 .sold-container h2 {
   text-align: center;
-  margin-bottom: 30px;
-  font-size: 28px;
+  margin-bottom: 50px;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  padding: 20px 0;
+}
+
+.sold-container h2::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, #3498db, #2ecc71);
+  border-radius: 2px;
 }
 
 .card-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 24px;
   justify-content: center;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .property-card {
-  background-color: #1e1e1e;
-  border: 1px solid #333;
-  border-radius: 12px;
-  padding: 20px;
-  width: 280px;
-  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  background: linear-gradient(135deg, #ffffff, #f8f9fa);
+  border: 2px solid #e1e8ed;
+  border-radius: 16px;
+  padding: 24px;
+  width: 300px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .property-card h3 {
   margin-top: 0;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  color: #2c3e50;
+  font-size: 1.3rem;
 }
 
 .property-card p {
-  margin: 5px 0;
-  font-size: 14px;
+  margin: 8px 0;
+  font-size: 15px;
+  color: #34495e;
 }
 
 .property-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 16px rgba(255, 255, 255, 0.1);
-  background-color: #333;
+  transform: translateY(-8px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, #f8f9fa, #ffffff);
+  border-color: #3498db;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .property-card {
-    width: 45%;
+    width: calc(50% - 12px);
+  }
+
+  .sold-container {
+    padding: 40px 20px;
+  }
+
+  .sold-container h2 {
+    font-size: 2rem;
   }
 }
 
 @media (max-width: 480px) {
   .property-card {
-    width: 90%;
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .card-grid {
+    gap: 16px;
   }
 }
-/* ======================= */
