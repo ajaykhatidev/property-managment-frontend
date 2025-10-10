@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../api/api-client.js';
 import { toast } from 'react-toastify';
+import { useAddClient } from '../hook/useClientOperations';
 import './AddClient.css';
 import PageHeader from './Navigation/PageHeader';
 import Breadcrumb from './Navigation/Breadcrumb';
@@ -16,7 +16,8 @@ function AddClient() {
     budgetMax: '',
     description: ''
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const addClientMutation = useAddClient();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -43,33 +44,24 @@ function AddClient() {
       return;
     }
     
-    setIsSubmitting(true);
-    
     try {
-      const response = await api.addClient(formData);
+      await addClientMutation.mutateAsync(formData);
+      toast.success('Client added successfully!');
       
-      if (response.data.success) {
-        toast.success('Client added successfully!');
-        
-        // Reset form
-        setFormData({
-          clientName: '',
-          phoneNumber: '',
-          requirement: '',
-          budgetMin: '',
-          budgetMax: '',
-          description: ''
-        });
-        
-        // Navigate back to client page
-        navigate('/client');
-      } else {
-        toast.error('Failed to add client. Please try again.');
-      }
+      // Reset form
+      setFormData({
+        clientName: '',
+        phoneNumber: '',
+        requirement: '',
+        budgetMin: '',
+        budgetMax: '',
+        description: ''
+      });
+      
+      // Navigate back to client page
+      navigate('/client');
     } catch (error) {
-      toast.error('Failed to add client. Please try again.');
-    } finally {
-      setIsSubmitting(false);
+      toast.error(`Failed to add client: ${error.message}`);
     }
   };
 
@@ -242,8 +234,8 @@ function AddClient() {
 
         {/* Form Actions */}
         <div className="form-actions">
-        <button type="submit" className="submit-btn" disabled={isSubmitting}>
-            {isSubmitting ? 'Adding Client...' : 'Add Client'}
+        <button type="submit" className="submit-btn" disabled={addClientMutation.isPending}>
+            {addClientMutation.isPending ? 'Adding Client...' : 'Add Client'}
           </button>
           <button type="button" onClick={() => navigate('/client')} className="cancel-btn">
             Cancel

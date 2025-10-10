@@ -1,21 +1,17 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { api } from '../api/api-client.js';
 import { toast } from 'react-toastify';
+import { useGetClients, useDeleteClient } from '../hook/useClientOperations';
 import './ViewClient.css';
 import PageHeader from './Navigation/PageHeader';
 import Breadcrumb from './Navigation/Breadcrumb';
 
 function ViewClient() {
   const navigate = useNavigate();
-  const [clients, setClients] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [requirementFilter, setRequirementFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
 
   // Debounce search term
   useEffect(() => {
@@ -26,38 +22,27 @@ function ViewClient() {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  const fetchClients = async (page = 1, search = '', requirement = '') => {
-    try {
-      setLoading(true);
-      const params = {
-        page,
-        limit: 100, // Increased limit to show more clients
-        ...(search && { search }),
-        ...(requirement && { requirement }),
-      };
-
-      const response = await api.getClients(params);
-      
-      // API response received successfully
-      
-      if (response.data.success) {
-        setClients(response.data.data);
-        setTotalPages(response.data.pagination.totalPages);
-        setCurrentPage(response.data.pagination.currentPage);
-        // Clients loaded successfully
-      } else {
-        setError(response.data.message || 'Failed to fetch clients');
-      }
-    } catch (err) {
-      setError('Failed to fetch clients');
-    } finally {
-      setLoading(false);
-    }
+  // React Query hooks
+  const filters = {
+    page: currentPage,
+    limit: 100,
+    ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
+    ...(requirementFilter && { requirement: requirementFilter }),
   };
 
-  useEffect(() => {
-    fetchClients(currentPage, debouncedSearchTerm, requirementFilter);
-  }, [currentPage, debouncedSearchTerm, requirementFilter]);
+  const { 
+    data: clientsData, 
+    isLoading, 
+    isError, 
+    error, 
+    refetch 
+  } = useGetClients(filters);
+
+  const deleteClientMutation = useDeleteClient();
+
+  // Extract data from response
+  const clients = clientsData?.data || [];
+  const totalPages = clientsData?.pagination?.totalPages || 1;
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
@@ -81,17 +66,10 @@ function ViewClient() {
     
     if (window.confirm('Are you sure you want to delete this client?')) {
       try {
-        const response = await api.deleteClient(clientId);
-        
-        if (response.data.success) {
-          toast.success('Client deleted successfully!');
-          // Refresh the client list
-          fetchClients(currentPage, debouncedSearchTerm, requirementFilter);
-        } else {
-          toast.error('Failed to delete client');
-        }
-      } catch (err) {
-        toast.error('Failed to delete client');
+        await deleteClientMutation.mutateAsync(clientId);
+        toast.success('Client deleted successfully!');
+      } catch (error) {
+        toast.error(`Failed to delete client: ${error.message}`);
       }
     }
   };
@@ -113,7 +91,7 @@ function ViewClient() {
     return colors[requirement] || '#6c757d';
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="view-client-container">
         <div className="loading">Loading clients...</div>
@@ -121,12 +99,12 @@ function ViewClient() {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <div className="view-client-container">
         <div className="error">
-          {error}
-          <button onClick={() => fetchClients(currentPage, debouncedSearchTerm, requirementFilter)}>
+          {error?.message || 'Failed to fetch clients'}
+          <button onClick={() => refetch()}>
             Try Again
           </button>
         </div>

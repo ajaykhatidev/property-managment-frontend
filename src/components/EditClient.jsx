@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { api } from '../api/api-client.js';
 import { toast } from 'react-toastify';
+import { useGetClient, useUpdateClient } from '../hook/useClientOperations';
 import './AddClient.css';
 import PageHeader from './Navigation/PageHeader';
 import Breadcrumb from './Navigation/Breadcrumb';
@@ -17,34 +17,23 @@ function EditClient() {
     budgetMax: '',
     description: ''
   });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch client data on component mount
+  // React Query hooks
+  const { 
+    data: clientData, 
+    isLoading, 
+    isError, 
+    error 
+  } = useGetClient(id);
+
+  const updateClientMutation = useUpdateClient();
+
+  // Update form data when client data is loaded
   useEffect(() => {
-    const fetchClient = async () => {
-      try {
-        const response = await api.getClient(id);
-        
-        if (response.data.success) {
-          setFormData(response.data.data);
-        } else {
-          setError('Failed to load client data');
-        }
-      } catch (err) {
-        setError('Failed to load client data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (id) {
-      fetchClient();
-    } else {
-      setLoading(false);
+    if (clientData?.success && clientData?.data) {
+      setFormData(clientData.data);
     }
-  }, [id]);
+  }, [clientData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -56,7 +45,6 @@ function EditClient() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Client data validated and ready for update
     
     // Form validation
     if (!formData.clientName.trim()) {
@@ -72,21 +60,15 @@ function EditClient() {
       return;
     }
     
-    setIsSubmitting(true);
-    
     try {
-      const response = await api.updateClient(id, formData);
-      
-      if (response.data.success) {
-        toast.success('Client updated successfully!');
-        navigate(-1);
-      } else {
-        toast.error('Failed to update client. Please try again.');
-      }
+      await updateClientMutation.mutateAsync({ 
+        id, 
+        clientData: formData 
+      });
+      toast.success('Client updated successfully!');
+      navigate(-1);
     } catch (error) {
-      toast.error('Failed to update client. Please try again.');
-    } finally {
-      setIsSubmitting(false);
+      toast.error(`Failed to update client: ${error.message}`);
     }
   };
 
@@ -155,7 +137,7 @@ function EditClient() {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="add-client-container">
         <div className="loading">Loading client data...</div>
@@ -163,10 +145,10 @@ function EditClient() {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <div className="add-client-container">
-        <div className="error">{error}</div>
+        <div className="error">{error?.message || 'Failed to load client data'}</div>
         <button onClick={() => navigate(-1)} className="cancel-btn">
           Back to Client List
         </button>
@@ -278,8 +260,8 @@ function EditClient() {
           <button type="button" onClick={() => navigate(-1)} className="cancel-btn">
             Cancel
           </button>
-          <button type="submit" className="submit-btn" disabled={isSubmitting}>
-            {isSubmitting ? 'Updating Client...' : 'Update Client'}
+          <button type="submit" className="submit-btn" disabled={updateClientMutation.isPending}>
+            {updateClientMutation.isPending ? 'Updating Client...' : 'Update Client'}
           </button>
         </div>
       </form>
